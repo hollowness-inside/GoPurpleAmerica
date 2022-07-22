@@ -11,6 +11,7 @@ import (
 type Raw struct {
 	Counties       string
 	DataPath       string
+	RegionsPath    string
 	Year           string
 	ColorTablePath string
 }
@@ -30,11 +31,27 @@ func (r *Raw) Evaluate() (*Purple, error) {
 	}
 
 	if r.DataPath != "" {
-		reader, err := zip.OpenReader()
+		reader, err := zip.OpenReader(r.DataPath)
 		if err != nil {
 			return nil, err
 		}
 
+		p.dataArchive = reader
+	}
+
+	{
+		var reader *zip.ReadCloser
+		var err error
+
+		if r.RegionsPath != "" {
+			reader, err = zip.OpenReader(r.RegionsPath)
+		} else {
+			reader, err = zip.OpenReader(r.RegionsPath)
+		}
+
+		if err != nil {
+			return nil, err
+		}
 		p.dataArchive = reader
 	}
 
