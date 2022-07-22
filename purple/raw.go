@@ -1,6 +1,7 @@
 package purple
 
 import (
+	"archive/zip"
 	"bufio"
 	"os"
 	"strconv"
@@ -28,7 +29,14 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		p.counties = counties
 	}
 
-	p.dataPath = r.DataPath
+	if r.DataPath != "" {
+		reader, err := zip.OpenReader()
+		if err != nil {
+			return nil, err
+		}
+
+		p.dataArchive = reader
+	}
 
 	if r.Year != "" {
 		year, err := strconv.Atoi(r.Year)

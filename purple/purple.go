@@ -1,8 +1,12 @@
 package purple
 
+import "archive/zip"
+
 type Purple struct {
 	counties []string
-	dataPath string
 	year     int
 	colors   [3][3]int
+
+	dataArchive    *zip.ReadCloser
+	regionsArchive *zip.ReadCloser
 }
