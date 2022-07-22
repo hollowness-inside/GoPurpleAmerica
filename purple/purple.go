@@ -10,3 +10,42 @@ type Purple struct {
 	dataArchive    *zip.ReadCloser
 	regionsArchive *zip.ReadCloser
 }
+
+func (p *Purple) GetCounties() ([]*County, error) {
+	ch := make(chan *County)
+	p.getCounties(ch)
+
+	counties := make([]*County, 0)
+	for i, c := range ch {
+		counties[i] = c
+	}
+
+	return counties
+}
+
+func (p *Purple) getCounties(counties chan *County) error {
+	files := make(map[string]*zip.File, 0)
+	for _, county := range p.counties {
+		files[county] = nil
+	}
+
+	for _, v := range p.regionsArchive.File {
+		if _, ok := files[v.Name]; ok {
+			files[v.Name] = v
+		}
+	}
+
+	if len(files) != len(p.counties) {
+		return nil, ErrCountyName
+	}
+
+	for _, file := range files {
+		go func() {
+			counties <- readFile(file)
+		}()
+	}
+
+	close(counties)
+
+	return nil
+}
