@@ -52,7 +52,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.dataArchive = reader
+		p.regionsArchive = reader
 	}
 
 	if r.Year != "" {
