@@ -13,7 +13,10 @@ type Purple struct {
 
 func (p *Purple) GetCounties() ([]*County, error) {
 	ch := make(chan *County)
-	p.getCounties(ch)
+	err := p.getCounties(ch)
+	if err != nil {
+		return err
+	}
 
 	counties := make([]*County, 0)
 	for i, c := range ch {
