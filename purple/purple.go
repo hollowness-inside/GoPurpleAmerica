@@ -1,6 +1,9 @@
 package purple
 
-import "archive/zip"
+import (
+	"archive/zip"
+	"sync"
+)
 
 type Purple struct {
 	counties []string
@@ -12,24 +15,9 @@ type Purple struct {
 }
 
 func (p *Purple) GetCounties() ([]*County, error) {
-	ch := make(chan *County)
-	err := p.getCounties(ch)
-	if err != nil {
-		return err
-	}
-
-	counties := make([]*County, 0)
-	for i, c := range ch {
-		counties[i] = c
-	}
-
-	return counties
-}
-
-func (p *Purple) getCounties(counties chan *County) error {
 	files := make(map[string]*zip.File, 0)
 	for _, county := range p.counties {
-		files[county] = nil
+		files[county+".txt"] = nil
 	}
 
 	for _, v := range p.regionsArchive.File {
@@ -42,13 +30,31 @@ func (p *Purple) getCounties(counties chan *County) error {
 		return nil, ErrCountyName
 	}
 
+	wg := &sync.WaitGroup{}
+	ch := make(chan *County, len(p.counties))
+
 	for _, file := range files {
-		go func() {
-			counties <- readFile(file)
-		}()
+		wg.Add(1)
+		go fileReader(wg, ch, file)
 	}
 
-	close(counties)
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
 
-	return nil
+	counties := make([]*County, len(p.counties))
+
+	i := 0
+	for c := range ch {
+		counties[i] = c
+		i++
+	}
+
+	return counties, nil
+}
+
+func fileReader(wg *sync.WaitGroup, counties chan *County, zf *zip.File) {
+	defer wg.Done()
+	counties <- &County{zf.Name}
 }
