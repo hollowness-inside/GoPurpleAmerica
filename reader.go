@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bufio"
 )
 
 type ReadCloser struct {
@@ -26,6 +27,32 @@ func (r *ReadCloser) GetRegion(state StateName) (*Region, error) {
 	}
 
 	return nil, ErrStateName
+}
+
+func readRegion(f zip.File) (*Region, error) {
+	rc, err := f.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+
+	scanner := Scanner{bufio.NewScanner(rc)}
+	bbox, err := scanner.ReadBBox()
+	if err != nil {
+		return nil, err
+	}
+
+	n, err := scanner.ReadInt()
+	if err != nil {
+		return nil, err
+	}
+
+	subregs := make([]Subregion, n)
+	for i := 0; i < n; i++ {
+		subregs[i] = readSubregion()
+	}
+
+	return &Region{bbox, n, subregs}, nil
 }
 
 func (r *ReadCloser) Close() {
