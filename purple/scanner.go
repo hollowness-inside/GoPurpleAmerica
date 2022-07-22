@@ -23,3 +23,22 @@ func (sc *Scanner) ReadPoint() Point {
 
 	return Point{x, y}
 }
+
+func (sc *Scanner) ReadBBox() BBox {
+	p1 := sc.ReadPoint()
+	p2 := sc.ReadPoint()
+
+	return BBox{p1, p2}
+}
+
+func (sc *Scanner) ReadInt() int {
+	sc.Scan()
+	v, _ := strconv.Atoi(sc.Text())
+	return v
+}
+
+func (sc *Scanner) ReadCounty() *County {
+	c := &County{}
+	c.Bbox = sc.ReadBBox()
+	c.CountiesN = sc.ReadInt()
+}
