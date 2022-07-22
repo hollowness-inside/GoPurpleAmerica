@@ -19,17 +19,19 @@ func OpenReader(name string) (*ReadCloser, error) {
 }
 
 func (r *ReadCloser) GetRegion(state StateName) (*Region, error) {
+	var f zip.File
+	found := false
 	sname := string(state) + ".txt"
-	for _, f := range r.rc.File {
+	for _, f = range r.rc.File {
 		if f.Name == sname {
-			return readRegion(f)
+			found = true
 		}
 	}
 
-	return nil, ErrStateName
-}
+	if !found {
+		return nil, ErrStateName
+	}
 
-func readRegion(f zip.File) (*Region, error) {
 	rc, err := f.Open()
 	if err != nil {
 		return nil, err
@@ -37,22 +39,9 @@ func readRegion(f zip.File) (*Region, error) {
 	defer rc.Close()
 
 	scanner := Scanner{bufio.NewScanner(rc)}
-	bbox, err := scanner.ReadBBox()
-	if err != nil {
-		return nil, err
-	}
+	reg, err := scanner.ReadRegion()
+	return reg, err
 
-	n, err := scanner.ReadInt()
-	if err != nil {
-		return nil, err
-	}
-
-	subregs := make([]Subregion, n)
-	for i := 0; i < n; i++ {
-		subregs[i] = readSubregion()
-	}
-
-	return &Region{bbox, n, subregs}, nil
 }
 
 func (r *ReadCloser) Close() {

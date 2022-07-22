@@ -3,7 +3,7 @@ package main
 type Region struct {
 	Bbox        BBox
 	SubregionsN int
-	Subregions  []Subregion
+	Subregions  []*Subregion
 }
 
 type Subregion struct {

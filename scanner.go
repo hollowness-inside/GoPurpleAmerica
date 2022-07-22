@@ -46,3 +46,31 @@ func (s *Scanner) ReadBBox() (BBox, error) {
 
 	return BBox{p1, p2}, nil
 }
+
+func (s *Scanner) ReadRegion() (*Region, error) {
+	bbox, err := s.ReadBBox()
+	if err != nil {
+		return nil, err
+	}
+
+	n, err := s.ReadInt()
+	if err != nil {
+		return nil, err
+	}
+
+	subregs := make([]*Subregion, n)
+	for i := 0; i < n; i++ {
+		subreg, err := s.ReadSubregion()
+		if err != nil {
+			return nil, err
+		}
+
+		subregs[i] = subreg
+	}
+
+	return &Region{bbox, n, subregs}, nil
+}
+
+func (s *Scanner) ReadSubregion() (*Subregion, error) {
+	return nil, nil
+}
