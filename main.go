@@ -1,5 +1,7 @@
 package main
 
+import "os"
+
 func main() {
 	// TODO: Map scale
 	// TODO: County abbreviation or full name
@@ -25,4 +27,33 @@ func main() {
 	// Uses the specified lookup color table
 	// purple --colors colors.txt
 	// purple -n colors.txt
+
+	pRaw := PurpleRaw{}
+	pRaw.counties = "USA"
+
+	i := 1
+
+	for i < len(os.Args) {
+		switch os.Args[i] {
+		case "-c", "--county":
+			i++
+			pRaw.counties = os.Args[i]
+		case "-d", "--data":
+			i++
+			pRaw.dataPath = os.Args[i]
+		case "-y", "--year":
+			i++
+			pRaw.year = os.Args[i]
+		case "-n", "--colors":
+			i++
+			pRaw.colorTablePath = os.Args[i]
+		case "--nct", "--new-color-table":
+			createColorTable(os.Args[i])
+			return
+		}
+	}
+}
+
+func createColorTable(a string) {
+
 }
