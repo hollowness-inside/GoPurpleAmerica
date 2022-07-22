@@ -16,6 +16,12 @@ type PurpleRaw struct {
 
 func (p *PurpleRaw) Evaluate() (*Purple, error) {
 	purple := new(Purple)
+	purple.counties = []string{"USA"}
+	purple.colors = [3][3]int{
+		{255, 0, 0},
+		{0, 255, 0},
+		{0, 0, 255},
+	}
 
 	if p.counties != "" {
 		counties := strings.Split(p.counties, ",")
@@ -37,6 +43,7 @@ func (p *PurpleRaw) Evaluate() (*Purple, error) {
 		if err != nil {
 			return nil, err
 		}
+		defer f.Close()
 
 		sc := bufio.NewScanner(f)
 

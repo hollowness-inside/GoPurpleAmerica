@@ -1,6 +1,10 @@
 package main
 
-import "os"
+import (
+	"fmt"
+	"log"
+	"os"
+)
 
 func main() {
 	// TODO: Map scale
@@ -29,7 +33,6 @@ func main() {
 	// purple -n colors.txt
 
 	pRaw := PurpleRaw{}
-	pRaw.counties = "USA"
 
 	i := 1
 
@@ -51,7 +54,16 @@ func main() {
 			createColorTable(os.Args[i])
 			return
 		}
+
+		i++
 	}
+
+	p, err := pRaw.Evaluate()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(*p)
 }
 
 func createColorTable(a string) {
