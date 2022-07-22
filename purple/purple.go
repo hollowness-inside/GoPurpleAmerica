@@ -6,6 +6,7 @@ import (
 )
 
 type Purple struct {
+	scale    int
 	counties []string
 	year     int
 	colors   [3][3]int
@@ -14,7 +15,7 @@ type Purple struct {
 	regionsArchive *zip.ReadCloser
 }
 
-func (p *Purple) GetCounties() ([]*County, error) {
+func (p *Purple) ParseCounties() ([]*County, error) {
 	files := make(map[string]*zip.File, 0)
 	for _, county := range p.counties {
 		files[county+".txt"] = nil
