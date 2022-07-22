@@ -40,7 +40,32 @@ func (sc *Scanner) ReadInt() int {
 func (sc *Scanner) ReadCounty() *County {
 	c := new(County)
 	c.Bbox = sc.ReadBBox()
-	c.CountiesN = sc.ReadInt()
-	sc.Scan()
+	c.SubcountiesN = sc.ReadInt()
+
+	c.Subcounties = make([]Subcounty, c.SubcountiesN)
+	for i := 0; i < c.SubcountiesN; i++ {
+		sc.Scan()
+
+		name := sc.ReadString()
+		countyName := sc.ReadString()
+		n := sc.ReadInt()
+
+		points := make([]Point, n)
+		for j := 0; j < n; j++ {
+			points[j] = sc.ReadPoint()
+		}
+
+		c.Subcounties[i] = Subcounty{
+			name,
+			countyName,
+			n,
+			points,
+		}
+	}
 	return c
+}
+
+func (sc *Scanner) ReadString() string {
+	sc.Scan()
+	return sc.Text()
 }
