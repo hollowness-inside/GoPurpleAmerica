@@ -1,4 +1,4 @@
-package main
+package purple
 
 import (
 	"bufio"
@@ -7,39 +7,39 @@ import (
 	"strings"
 )
 
-type PurpleRaw struct {
-	counties       string
-	dataPath       string
-	year           string
-	colorTablePath string
+type Raw struct {
+	Counties       string
+	DataPath       string
+	Year           string
+	ColorTablePath string
 }
 
-func (p *PurpleRaw) Evaluate() (*Purple, error) {
-	purple := new(Purple)
-	purple.counties = []string{"USA"}
-	purple.colors = [3][3]int{
+func (pr *Raw) Evaluate() (*Purple, error) {
+	p := new(Purple)
+	p.counties = []string{"USA"}
+	p.colors = [3][3]int{
 		{255, 0, 0},
 		{0, 255, 0},
 		{0, 0, 255},
 	}
 
-	if p.counties != "" {
-		counties := strings.Split(p.counties, ",")
-		purple.counties = counties
+	if pr.Counties != "" {
+		counties := strings.Split(pr.Counties, ",")
+		p.counties = counties
 	}
 
-	purple.dataPath = p.dataPath
+	p.dataPath = pr.DataPath
 
-	if p.year != "" {
-		year, err := strconv.Atoi(p.year)
+	if pr.Year != "" {
+		year, err := strconv.Atoi(pr.Year)
 		if err != nil {
 			return nil, err
 		}
-		purple.year = year
+		p.year = year
 	}
 
-	if p.colorTablePath != "" {
-		f, err := os.Open(p.colorTablePath)
+	if pr.ColorTablePath != "" {
+		f, err := os.Open(pr.ColorTablePath)
 		if err != nil {
 			return nil, err
 		}
@@ -73,10 +73,10 @@ func (p *PurpleRaw) Evaluate() (*Purple, error) {
 			colors[i] = [3]int{r, g, b}
 		}
 
-		purple.colors = colors
+		p.colors = colors
 	}
 
-	return purple, nil
+	return p, nil
 }
 
 type Purple struct {

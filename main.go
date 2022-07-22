@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/MrPythoneer/nifty/purple_america/purple"
 )
 
 func main() {
@@ -32,7 +34,7 @@ func main() {
 	// purple --colors colors.txt
 	// purple -n colors.txt
 
-	pRaw := PurpleRaw{}
+	pRaw := purple.Raw{}
 
 	i := 1
 
@@ -40,16 +42,16 @@ func main() {
 		switch os.Args[i] {
 		case "-c", "--county":
 			i++
-			pRaw.counties = os.Args[i]
+			pRaw.Counties = os.Args[i]
 		case "-d", "--data":
 			i++
-			pRaw.dataPath = os.Args[i]
+			pRaw.DataPath = os.Args[i]
 		case "-y", "--year":
 			i++
-			pRaw.year = os.Args[i]
+			pRaw.Year = os.Args[i]
 		case "-n", "--colors":
 			i++
-			pRaw.colorTablePath = os.Args[i]
+			pRaw.ColorTablePath = os.Args[i]
 		case "--nct", "--new-color-table":
 			createColorTable(os.Args[i])
 			return
@@ -62,8 +64,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(*p)
+	fmt.Println(p)
 }
 
 func createColorTable(a string) {
