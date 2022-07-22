@@ -2,6 +2,9 @@ package purple
 
 import (
 	"archive/zip"
+	"bufio"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -54,7 +57,25 @@ func (p *Purple) GetCounties() ([]*County, error) {
 	return counties, nil
 }
 
-func fileReader(wg *sync.WaitGroup, counties chan *County, zf *zip.File) {
+func fileReader(wg *sync.WaitGroup, counties chan *County, zipFile *zip.File) {
 	defer wg.Done()
-	counties <- &County{zf.Name}
+
+	f, _ := zipFile.Open()
+	sc := bufio.NewScanner(f)
+	p := readPoint(sc)
+
+	counties <- &County{p}
+}
+
+func readPoint(sc *bufio.Scanner) Point {
+	sc.Scan()
+	xy := strings.Split(sc.Text(), "   ")
+	x, _ := strconv.ParseFloat(xy[0], 64)
+	y, _ := strconv.ParseFloat(xy[1], 64)
+
+	return Point{x, y}
+}
+
+type Point struct {
+	x, y float64
 }
