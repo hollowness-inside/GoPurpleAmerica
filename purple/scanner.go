@@ -16,10 +16,13 @@ func NewScanner(r io.Reader) *Scanner {
 }
 
 func (sc *Scanner) ScanPoint() Point {
-	sc.Scan()
-	xy := strings.Split(sc.Text(), "   ")
-	x, _ := strconv.ParseFloat(xy[0], 64)
-	y, _ := strconv.ParseFloat(xy[1], 64)
+	xy := strings.Split(sc.ScanString(), "   ")
+
+	xs := strings.TrimSpace(xy[0])
+	ys := strings.TrimSpace(xy[1])
+
+	x, _ := strconv.ParseFloat(xs, 64)
+	y, _ := strconv.ParseFloat(ys, 64)
 
 	return Point{x, y}
 }
@@ -32,8 +35,7 @@ func (sc *Scanner) ScanBBox() BBox {
 }
 
 func (sc *Scanner) ScanInt() int {
-	sc.Scan()
-	v, _ := strconv.Atoi(sc.Text())
+	v, _ := strconv.Atoi(sc.ScanString())
 	return v
 }
 
