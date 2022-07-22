@@ -23,3 +23,19 @@ func (b *BBox) MaxY() float64 {
 		return b.p2.y
 	}
 }
+
+func (b *BBox) MinX() float64 {
+	if b.p1.x > b.p2.x {
+		return b.p2.x
+	} else {
+		return b.p1.x
+	}
+}
+
+func (b *BBox) MinY() float64 {
+	if b.p1.y > b.p2.y {
+		return b.p2.y
+	} else {
+		return b.p1.y
+	}
+}
