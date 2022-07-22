@@ -11,8 +11,8 @@ type Scanner struct {
 	bufio.Scanner
 }
 
-func NewScanner(r io.Reader) Scanner {
-	return Scanner{*bufio.NewScanner(r)}
+func NewScanner(r io.Reader) *Scanner {
+	return &Scanner{*bufio.NewScanner(r)}
 }
 
 func (sc *Scanner) ReadPoint() Point {
@@ -38,7 +38,9 @@ func (sc *Scanner) ReadInt() int {
 }
 
 func (sc *Scanner) ReadCounty() *County {
-	c := &County{}
+	c := new(County)
 	c.Bbox = sc.ReadBBox()
 	c.CountiesN = sc.ReadInt()
+	sc.Scan()
+	return c
 }
