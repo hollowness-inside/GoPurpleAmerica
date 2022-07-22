@@ -3,5 +3,11 @@ package main
 type Region struct {
 	Bbox        BBox
 	SubregionsN int
-	Subregions  []Region
+	Subregions  []Subregion
+}
+
+type Subregion struct {
+	PointsN    int
+	Name       string
+	RegionName string
 }
