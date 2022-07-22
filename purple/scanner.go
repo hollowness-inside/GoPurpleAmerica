@@ -15,7 +15,7 @@ func NewScanner(r io.Reader) *Scanner {
 	return &Scanner{*bufio.NewScanner(r)}
 }
 
-func (sc *Scanner) ReadPoint() Point {
+func (sc *Scanner) ScanPoint() Point {
 	sc.Scan()
 	xy := strings.Split(sc.Text(), "   ")
 	x, _ := strconv.ParseFloat(xy[0], 64)
@@ -24,35 +24,40 @@ func (sc *Scanner) ReadPoint() Point {
 	return Point{x, y}
 }
 
-func (sc *Scanner) ReadBBox() BBox {
-	p1 := sc.ReadPoint()
-	p2 := sc.ReadPoint()
+func (sc *Scanner) ScanBBox() BBox {
+	p1 := sc.ScanPoint()
+	p2 := sc.ScanPoint()
 
 	return BBox{p1, p2}
 }
 
-func (sc *Scanner) ReadInt() int {
+func (sc *Scanner) ScanInt() int {
 	sc.Scan()
 	v, _ := strconv.Atoi(sc.Text())
 	return v
 }
 
-func (sc *Scanner) ReadCounty() *County {
+func (sc *Scanner) ScanString() string {
+	sc.Scan()
+	return sc.Text()
+}
+
+func (sc *Scanner) ScanCounty() *County {
 	c := new(County)
-	c.Bbox = sc.ReadBBox()
-	c.SubcountiesN = sc.ReadInt()
+	c.Bbox = sc.ScanBBox()
+	c.SubcountiesN = sc.ScanInt()
 
 	c.Subcounties = make([]Subcounty, c.SubcountiesN)
 	for i := 0; i < c.SubcountiesN; i++ {
 		sc.Scan()
 
-		name := sc.ReadString()
-		countyName := sc.ReadString()
-		n := sc.ReadInt()
+		name := sc.ScanString()
+		countyName := sc.ScanString()
+		n := sc.ScanInt()
 
 		points := make([]Point, n)
 		for j := 0; j < n; j++ {
-			points[j] = sc.ReadPoint()
+			points[j] = sc.ScanPoint()
 		}
 
 		c.Subcounties[i] = Subcounty{
@@ -63,9 +68,4 @@ func (sc *Scanner) ReadCounty() *County {
 		}
 	}
 	return c
-}
-
-func (sc *Scanner) ReadString() string {
-	sc.Scan()
-	return sc.Text()
 }

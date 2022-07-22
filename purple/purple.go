@@ -61,5 +61,5 @@ func fileReader(wg *sync.WaitGroup, counties chan *County, zipFile *zip.File) {
 	defer f.Close()
 
 	s := NewScanner(f)
-	counties <- s.ReadCounty()
+	counties <- s.ScanCounty()
 }
