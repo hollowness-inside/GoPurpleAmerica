@@ -34,7 +34,6 @@ func (p *Painter) Draw() {
 
 	for _, subc := range county.Subcounties {
 		for _, point := range subc.Points {
-
 			x := x1 - int(point.x*scale)
 			y := int(point.y*scale) - y0
 			img.Set(x, y, color.White)
@@ -45,4 +44,16 @@ func (p *Painter) Draw() {
 	defer f.Close()
 
 	png.Encode(f, img)
+}
+
+func (p *Painter) DrawOutline(pts *[]Point) {
+	points := *pts
+
+	prev := points[0]
+	for _, p := range points[1:] {
+		p.DrawLine(p, prev)
+		prev = p
+	}
+
+	p.DrawLine(points[0], points[len(points)-1])
 }
