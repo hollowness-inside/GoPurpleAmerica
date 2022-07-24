@@ -27,16 +27,22 @@ func (p *Painter) Draw() {
 	x1 := int(county.Bbox.MaxX() * scale)
 	y1 := int(county.Bbox.MaxY() * scale)
 
-	img := image.NewGray(image.Rect(x0, y0, x1, y1))
+	width := x1 - x0
+	height := y1 - y0
 
-	subc := county.Subcounties[1]
-	for _, point := range subc.Points {
-		x := int(point.x * scale)
-		y := int(point.y * scale)
-		img.Set(x, y, color.White)
+	img := image.NewGray(image.Rect(0, 0, width, height))
+
+	for _, subc := range county.Subcounties {
+		for _, point := range subc.Points {
+
+			x := x1 - int(point.x*scale)
+			y := int(point.y*scale) - y0
+			img.Set(x, y, color.White)
+		}
 	}
 
 	f, _ := os.Create("myfile.png")
 	defer f.Close()
+
 	png.Encode(f, img)
 }
