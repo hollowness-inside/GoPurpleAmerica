@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -35,6 +34,7 @@ func main() {
 	// purple -n colors.txt
 
 	pRaw := purple.Raw{}
+	pRaw.RegionsPath = "regions.zip"
 
 	i := 1
 
@@ -42,7 +42,7 @@ func main() {
 		switch os.Args[i] {
 		case "-c", "--county":
 			i++
-			pRaw.Counties = os.Args[i]
+			pRaw.County = os.Args[i]
 		case "-d", "--data":
 			i++
 			pRaw.DataPath = os.Args[i]
@@ -64,9 +64,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(p)
+
+	p.Draw()
 }
 
-func createColorTable(a string) {
+func createColorTable(output string) {
 
 }
