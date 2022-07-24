@@ -19,6 +19,17 @@ type Purple struct {
 	regionsArchive *zip.ReadCloser
 }
 
+func (p *Purple) UseDefault() {
+	p.county = "USA"
+	p.strokeWidth = 0.5
+	p.strokeColor = color.RGBA{0, 0, 0, 255}
+	p.colors = [3][3]int{
+		{255, 0, 0},
+		{0, 255, 0},
+		{0, 0, 255},
+	}
+}
+
 func (p *Purple) ParseCounty() *County {
 	var zipFile *zip.File
 	for _, f := range p.regionsArchive.File {

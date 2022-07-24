@@ -3,7 +3,6 @@ package purple
 import (
 	"archive/zip"
 	"bufio"
-	"image/color"
 	"os"
 	"strconv"
 	"strings"
@@ -22,14 +21,7 @@ type Raw struct {
 
 func (r *Raw) Evaluate() (*Purple, error) {
 	p := new(Purple)
-	p.county = "USA"
-	p.colors = [3][3]int{
-		{255, 0, 0},
-		{0, 255, 0},
-		{0, 0, 255},
-	}
-	p.strokeWidth = 0.5
-	p.strokeColor = color.RGBA{0, 0, 0, 255}
+	p.UseDefault()
 
 	if r.County != "" {
 		p.county = r.County
