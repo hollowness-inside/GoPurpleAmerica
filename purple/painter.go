@@ -9,10 +9,13 @@ import (
 
 type Painter struct {
 	purple *Purple
+	image  *image.RGBA
 }
 
-func NewPainter(p *Purple) Painter {
-	return Painter{p}
+func NewPainter(purple *Purple) Painter {
+	painter := Painter{}
+	painter.purple = purple
+	return painter
 }
 
 func (p *Painter) Draw() {
@@ -30,7 +33,8 @@ func (p *Painter) Draw() {
 	width := x1 - x0
 	height := y1 - y0
 
-	img := image.NewGray(image.Rect(0, 0, width, height))
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	p.image = img
 
 	for _, subc := range county.Subcounties {
 		for _, point := range subc.Points {
@@ -48,11 +52,10 @@ func (p *Painter) Draw() {
 
 func (p *Painter) DrawOutline(pts *[]Point) {
 	points := *pts
-
 	prev := points[0]
-	for _, p := range points[1:] {
-		p.DrawLine(p, prev)
-		prev = p
+	for _, pt := range points[1:] {
+		p.DrawLine(pt, prev)
+		prev = pt
 	}
 
 	p.DrawLine(points[0], points[len(points)-1])
