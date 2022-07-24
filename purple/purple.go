@@ -6,7 +6,6 @@ import (
 )
 
 type Purple struct {
-	scale    int
 	counties []string
 	year     int
 	colors   [3][3]int

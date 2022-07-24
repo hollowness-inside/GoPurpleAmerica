@@ -9,7 +9,6 @@ import (
 )
 
 type Raw struct {
-	Scale          string
 	Counties       string
 	DataPath       string
 	RegionsPath    string
@@ -19,7 +18,6 @@ type Raw struct {
 
 func (r *Raw) Evaluate() (*Purple, error) {
 	p := new(Purple)
-	p.scale = 10
 	p.counties = []string{"USA"}
 	p.colors = [3][3]int{
 		{255, 0, 0},
