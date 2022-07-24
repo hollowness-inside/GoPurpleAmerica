@@ -1,8 +1,8 @@
 package purple
 
-type Point struct {
-	x, y float64
-}
+import "image"
+
+type Point = image.Point
 
 type BBox struct {
 	p1, p2 Point
