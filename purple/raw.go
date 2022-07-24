@@ -10,7 +10,7 @@ import (
 )
 
 type Raw struct {
-	Counties       string
+	County         string
 	DataPath       string
 	RegionsPath    string
 	Year           string
@@ -22,18 +22,17 @@ type Raw struct {
 
 func (r *Raw) Evaluate() (*Purple, error) {
 	p := new(Purple)
-	p.counties = []string{"USA"}
+	p.county = "USA"
 	p.colors = [3][3]int{
 		{255, 0, 0},
 		{0, 255, 0},
 		{0, 0, 255},
 	}
 	p.strokeWidth = 0.5
-	p.strokeColor = color.RGBA{0, 0, 0, 0}
+	p.strokeColor = color.RGBA{0, 0, 0, 255}
 
-	if r.Counties != "" {
-		counties := strings.Split(r.Counties, ",")
-		p.counties = counties
+	if r.County != "" {
+		p.county = r.County
 	}
 
 	if r.DataPath != "" {
