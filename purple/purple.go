@@ -2,6 +2,7 @@ package purple
 
 import (
 	"archive/zip"
+	"image/color"
 	"sync"
 )
 
@@ -9,6 +10,9 @@ type Purple struct {
 	counties []string
 	year     int
 	colors   [3][3]int
+
+	strokeWidth float64
+	strokeColor color.RGBA
 
 	dataArchive    *zip.ReadCloser
 	regionsArchive *zip.ReadCloser

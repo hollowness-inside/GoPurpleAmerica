@@ -3,6 +3,7 @@ package purple
 import (
 	"archive/zip"
 	"bufio"
+	"image/color"
 	"os"
 	"strconv"
 	"strings"
@@ -14,6 +15,9 @@ type Raw struct {
 	RegionsPath    string
 	Year           string
 	ColorTablePath string
+
+	StrokeWidth string
+	StrokeColor string
 }
 
 func (r *Raw) Evaluate() (*Purple, error) {
@@ -24,6 +28,8 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		{0, 255, 0},
 		{0, 0, 255},
 	}
+	p.strokeWidth = 0.5
+	p.strokeColor = color.RGBA{0, 0, 0, 0}
 
 	if r.Counties != "" {
 		counties := strings.Split(r.Counties, ",")

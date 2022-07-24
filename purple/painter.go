@@ -1,8 +1,6 @@
 package purple
 
 import (
-	"image/color"
-
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
 
@@ -33,9 +31,8 @@ func (p *Painter) drawCounty(county *County, gc *draw2dsvg.GraphicContext) {
 	minX := county.Bbox.MinX()
 	maxY := county.Bbox.MaxY()
 
-	// gc.SetFillColor(color.RGBA{255,0,0,255})
-	gc.SetStrokeColor(color.Black)
-	gc.SetLineWidth(0.5)
+	gc.SetStrokeColor(p.purple.strokeColor)
+	gc.SetLineWidth(p.purple.strokeWidth)
 
 	for _, subc := range county.Subcounties {
 		gc.BeginPath()
