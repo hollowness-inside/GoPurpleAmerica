@@ -27,7 +27,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 	p.UseDefault()
 
 	if r.Region != "" {
-		p.region = r.Region
+		p.regionName = r.Region
 	}
 
 	if r.DataPath != "" {
@@ -44,8 +44,20 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		if err != nil {
 			return nil, err
 		}
+		defer reader.Close()
 
-		p.regionsArchive = reader
+		var zipFile *zip.File
+		for _, f := range reader.File {
+			if f.Name == p.regionName+".txt" {
+				zipFile = f
+			}
+		}
+
+		f, _ := zipFile.Open()
+		defer f.Close()
+
+		s := NewScanner(f)
+		p.region = s.ScanRegion()
 	}
 
 	if r.Year != "" {
