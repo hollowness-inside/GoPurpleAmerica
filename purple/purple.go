@@ -59,6 +59,7 @@ func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
 	gc.SetLineWidth(p.strokeWidth)
 
 	for _, subc := range region.Subregions {
+		gc.SetFillColor(p.getSubregionColor())
 		gc.BeginPath()
 
 		start := subc.Points[0]
@@ -74,5 +75,10 @@ func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
 		gc.LineTo(xs, ys)
 		gc.Close()
 		gc.FillStroke()
+		gc.Fill(gc.Current.Path)
 	}
+}
+
+func (p *Purple) getSubregionColor() color.RGBA {
+	return color.RGBA{0, 0, 0, 255}
 }
