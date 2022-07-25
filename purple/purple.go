@@ -9,7 +9,7 @@ import (
 )
 
 type Purple struct {
-	county string
+	region string
 	year   int
 	colors [3][3]int
 
@@ -24,7 +24,7 @@ type Purple struct {
 }
 
 func (p *Purple) UseDefault() {
-	p.county = "USA"
+	p.region = "USA"
 	p.scale = 10
 	p.strokeWidth = 0.2
 	p.strokeColor = color.RGBA{0, 0, 0, 255}
@@ -35,10 +35,10 @@ func (p *Purple) UseDefault() {
 	}
 }
 
-func (p *Purple) ParseCounty() *County {
+func (p *Purple) ParseRegion() *Region {
 	var zipFile *zip.File
 	for _, f := range p.regionsArchive.File {
-		if f.Name == p.county+".txt" {
+		if f.Name == p.region+".txt" {
 			zipFile = f
 		}
 	}
@@ -47,34 +47,34 @@ func (p *Purple) ParseCounty() *County {
 	defer f.Close()
 
 	s := NewScanner(f)
-	return s.ScanCounty()
+	return s.ScanRegion()
 }
 
 func (p *Purple) Draw() {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
 
-	county := p.ParseCounty()
-	width := county.Bbox.MaxX() - county.Bbox.MinX()
-	height := county.Bbox.MaxY() - county.Bbox.MinY()
+	region := p.ParseRegion()
+	width := region.Bbox.MaxX() - region.Bbox.MinX()
+	height := region.Bbox.MaxY() - region.Bbox.MinY()
 
 	svg.Width = fmt.Sprintf("%fpx", width*p.scale)
 	svg.Height = fmt.Sprintf("%fpx", height*p.scale)
 
 	gc.Scale(p.scale, p.scale)
-	p.drawCounty(county, gc)
+	p.drawRegion(region, gc)
 
 	draw2dsvg.SaveToSvgFile(p.outputPath, svg)
 }
 
-func (p *Purple) drawCounty(county *County, gc *draw2dsvg.GraphicContext) {
-	minX := county.Bbox.MinX()
-	maxY := county.Bbox.MaxY()
+func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
+	minX := region.Bbox.MinX()
+	maxY := region.Bbox.MaxY()
 
 	gc.SetStrokeColor(p.strokeColor)
 	gc.SetLineWidth(p.strokeWidth)
 
-	for _, subc := range county.Subcounties {
+	for _, subc := range region.Subregions {
 		gc.BeginPath()
 
 		start := subc.Points[0]

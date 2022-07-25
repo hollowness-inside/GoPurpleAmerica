@@ -44,17 +44,17 @@ func (sc *Scanner) ScanString() string {
 	return sc.Text()
 }
 
-func (sc *Scanner) ScanCounty() *County {
-	c := new(County)
-	c.Bbox = sc.ScanBBox()
-	c.SubcountiesN = sc.ScanInt()
+func (sc *Scanner) ScanRegion() *Region {
+	reg := new(Region)
+	reg.Bbox = sc.ScanBBox()
+	reg.SubregionsN = sc.ScanInt()
 
-	c.Subcounties = make([]Subcounty, c.SubcountiesN)
-	for i := 0; i < c.SubcountiesN; i++ {
+	reg.Subregions = make([]Subregion, reg.SubregionsN)
+	for i := 0; i < reg.SubregionsN; i++ {
 		sc.Scan()
 
 		name := sc.ScanString()
-		countyName := sc.ScanString()
+		regionName := sc.ScanString()
 		n := sc.ScanInt()
 
 		points := make([]Point, n)
@@ -62,12 +62,12 @@ func (sc *Scanner) ScanCounty() *County {
 			points[j] = sc.ScanPoint()
 		}
 
-		c.Subcounties[i] = Subcounty{
+		reg.Subregions[i] = Subregion{
 			name,
-			countyName,
+			regionName,
 			n,
 			points,
 		}
 	}
-	return c
+	return reg
 }

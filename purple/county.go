@@ -1,15 +1,15 @@
 package purple
 
-type County struct {
-	Bbox         BBox
-	Name         string
-	SubcountiesN int
-	Subcounties  []Subcounty
+type Region struct {
+	Bbox        BBox
+	Name        string
+	SubregionsN int
+	Subregions  []Subregion
 }
 
-type Subcounty struct {
+type Subregion struct {
 	Name       string
-	CountyName string
+	RegionName string
 	PointsN    int
 	Points     []Point
 }

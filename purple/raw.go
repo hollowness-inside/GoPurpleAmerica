@@ -10,9 +10,9 @@ import (
 )
 
 type Raw struct {
-	County         string
-	DataPath       string
+	Region         string
 	RegionsPath    string
+	DataPath       string
 	Year           string
 	ColorTablePath string
 	OutputPath     string
@@ -26,8 +26,8 @@ func (r *Raw) Evaluate() (*Purple, error) {
 	p := new(Purple)
 	p.UseDefault()
 
-	if r.County != "" {
-		p.county = r.County
+	if r.Region != "" {
+		p.region = r.Region
 	}
 
 	if r.DataPath != "" {

@@ -10,9 +10,9 @@ import (
 
 const HelpMsg = `Usage: purple [options] -r regions.zip -o output.svg
 Options:
-	-c/--county COUNTY_ABBR		Selects county to draw (USA by default)
+	-r/--region REGION_NAME		Selects region to draw (USA by default)
+	-rd/--regions-data regions.zip		Selects archive containing region points data
 	-d/--data path.zip		Selects archive containing statisics data
-	-r/--region path.zip		Selects archive containing region points data
 	-y/--year INT			Suffix of the state statistics file name
 	-n/--colors filepath		Draws with colors presented in the file
 	-N/--nct output			Saves an example of a color file
@@ -32,13 +32,13 @@ func main() {
 
 	for i < len(os.Args) {
 		switch os.Args[i] {
-		case "-c", "--county":
+		case "-r", "--region":
 			i++
-			pRaw.County = os.Args[i]
+			pRaw.Region = os.Args[i]
 		case "-d", "--data":
 			i++
 			pRaw.DataPath = os.Args[i]
-		case "-r", "--region":
+		case "-rd", "--regions-data":
 			i++
 			pRaw.RegionsPath = os.Args[i]
 		case "-o", "--output":
