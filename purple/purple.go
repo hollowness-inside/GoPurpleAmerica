@@ -17,6 +17,8 @@ type Purple struct {
 
 	dataArchive    *zip.ReadCloser
 	regionsArchive *zip.ReadCloser
+
+	outputPath string
 }
 
 func (p *Purple) UseDefault() {
@@ -53,7 +55,7 @@ func (p *Purple) Draw() {
 
 	p.drawCounty(county, gc)
 
-	draw2dsvg.SaveToSvgFile("myfile.svg", svg)
+	draw2dsvg.SaveToSvgFile(p.outputPath, svg)
 }
 
 func (p *Purple) drawCounty(county *County, gc *draw2dsvg.GraphicContext) {

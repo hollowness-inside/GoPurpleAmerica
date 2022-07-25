@@ -83,6 +83,12 @@ func main() {
 		i++
 	}
 
+	if pRaw.RegionsPath == "" || pRaw.OutputPath == "" {
+		fmt.Println("Please provide output file name and regions data archive")
+		Help()
+		return
+	}
+
 	p, err := pRaw.Evaluate()
 	if err != nil {
 		log.Fatal(err)

@@ -15,6 +15,7 @@ type Raw struct {
 	RegionsPath    string
 	Year           string
 	ColorTablePath string
+	OutputPath     string
 
 	StrokeWidth string
 	StrokeColor string
@@ -124,6 +125,8 @@ func (r *Raw) Evaluate() (*Purple, error) {
 
 		p.colors = colors
 	}
+
+	p.outputPath = r.OutputPath
 
 	return p, nil
 }
