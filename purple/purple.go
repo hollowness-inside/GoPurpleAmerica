@@ -29,9 +29,9 @@ func (p *Purple) UseDefault() {
 	p.strokeWidth = 0.2
 	p.strokeColor = color.RGBA{0, 0, 0, 255}
 	p.colors = [3]color.RGBA{
-		color.RGBA{255, 0, 0, 255},
-		color.RGBA{0, 255, 0, 255},
-		color.RGBA{0, 0, 255, 255},
+		{255, 0, 0, 255},
+		{0, 255, 0, 255},
+		{0, 0, 255, 255},
 	}
 }
 
