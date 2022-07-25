@@ -11,21 +11,22 @@ import (
 const HelpMsg = `Usage: purple [options] -r regions.zip -o output.svg
 Options:
 	-r/--region REGION_NAME		Selects region to draw (USA by default)
-	-rd/--regions-data regions.zip		Selects archive containing region points data
+	-rd/--regions-data regions.zip	Selects archive containing region points data
 	-d/--data path.zip		Selects archive containing statisics data
 	-y/--year INT			Suffix of the state statistics file name
 	-n/--colors filepath		Draws with colors presented in the file
-	-N/--nct output			Saves an example of a color file
+	-N output			Saves an example of a color file
+	-h/--help			Shows this message
+	-o/--output image.svg		Output path
 	-s/--scale FLOAT		Scales the result by the given factor (10 by default)
-	--sw/--stroke-width FLOAT	Sets stroke width
-	--sc/--stroke-color R,G,B,A	Sets stroke color`
+	-sw/--stroke-width FLOAT	Sets stroke width
+	-sc/--stroke-color R,G,B,A	Sets stroke color`
 
 func main() {
 	// TODO: County abbreviation or full name
 	// TODO: Election results by county
 	// TODO: Election results by several counties
 	// TODO: Use different data sets
-
 	pRaw := purple.Raw{}
 
 	i := 1
@@ -50,14 +51,14 @@ func main() {
 		case "-n", "--colors":
 			i++
 			pRaw.ColorTablePath = os.Args[i]
-		case "-N", "--nct":
+		case "-N":
 			i++
 			createColorTable(os.Args[i])
 			return
-		case "--sw", "--stroke-width":
+		case "-sw", "--stroke-width":
 			i++
 			pRaw.StrokeWidth = os.Args[i]
-		case "--sc", "--stroke-color":
+		case "-sc", "--stroke-color":
 			i++
 			pRaw.StrokeColor = os.Args[i]
 		case "-s", "--scale":
@@ -68,8 +69,14 @@ func main() {
 		i++
 	}
 
-	if pRaw.RegionsPath == "" || pRaw.OutputPath == "" {
-		fmt.Println("Please provide output file name and regions data archive")
+	if pRaw.RegionsPath == "" {
+		fmt.Println("Please provide regions data archive")
+		fmt.Println(HelpMsg)
+		return
+	}
+
+	if pRaw.OutputPath == "" {
+		fmt.Println("Please provide output file path")
 		fmt.Println(HelpMsg)
 		return
 	}
