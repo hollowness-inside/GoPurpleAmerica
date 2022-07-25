@@ -44,9 +44,6 @@ func (p *Purple) Draw() {
 }
 
 func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
-	minX := state.Bbox.Min.Y
-	maxY := state.Bbox.Max.Y
-
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
@@ -56,12 +53,13 @@ func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
 		gc.BeginPath()
 
 		start := county.Points[0]
-		xs, ys := start.X-minX, maxY-start.Y
+		xs := start.X - state.Bbox.Min.X
+		ys := state.Bbox.Max.Y - start.Y
 		gc.MoveTo(xs, ys)
 
 		for _, point := range county.Points {
-			x := point.X - minX
-			y := maxY - point.Y
+			x := point.X - state.Bbox.Min.X
+			y := state.Bbox.Max.Y - point.Y
 			gc.LineTo(x, y)
 		}
 
