@@ -36,8 +36,8 @@ func (p *Purple) Draw() {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
 
-	width := p.region.Bbox.MaxX() - p.region.Bbox.MinX()
-	height := p.region.Bbox.MaxY() - p.region.Bbox.MinY()
+	width := p.region.Bbox.Max.X - p.region.Bbox.Min.X
+	height := p.region.Bbox.Max.Y - p.region.Bbox.Min.Y
 
 	svg.Width = fmt.Sprintf("%fpx", width*p.scale)
 	svg.Height = fmt.Sprintf("%fpx", height*p.scale)
@@ -49,8 +49,8 @@ func (p *Purple) Draw() {
 }
 
 func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
-	minX := region.Bbox.MinX()
-	maxY := region.Bbox.MaxY()
+	minX := region.Bbox.Min.Y
+	maxY := region.Bbox.Max.Y
 
 	gc.SetStrokeColor(p.strokeColor)
 	gc.SetLineWidth(p.strokeWidth)
@@ -60,12 +60,12 @@ func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
 		gc.BeginPath()
 
 		start := subc.Points[0]
-		xs, ys := start.x-minX, maxY-start.y
+		xs, ys := start.X-minX, maxY-start.Y
 		gc.MoveTo(xs, ys)
 
 		for _, point := range subc.Points {
-			x := point.x - minX
-			y := maxY - point.y
+			x := point.X - minX
+			y := maxY - point.Y
 			gc.LineTo(x, y)
 		}
 

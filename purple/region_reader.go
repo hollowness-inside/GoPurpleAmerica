@@ -36,7 +36,7 @@ func (sc *regionReader) scanBBox() BBox {
 	p1 := sc.scanPoint()
 	p2 := sc.scanPoint()
 
-	return BBox{p1, p2}
+	return NewBBox(p1, p2)
 }
 
 func (sc *regionReader) scanInt() int {

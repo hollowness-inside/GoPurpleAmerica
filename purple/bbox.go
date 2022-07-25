@@ -1,41 +1,38 @@
 package purple
 
 type Point struct {
-	x, y float64
+	X float64
+	Y float64
 }
 
 type BBox struct {
-	p1, p2 Point
+	Point1 Point
+	Point2 Point
+
+	Max Point
+	Min Point
 }
 
-func (b *BBox) MaxX() float64 {
-	if b.p1.x > b.p2.x {
-		return b.p1.x
-	} else {
-		return b.p2.x
-	}
-}
+func NewBBox(p1, p2 Point) BBox {
+	bbox := BBox{}
+	bbox.Point1 = p1
+	bbox.Point2 = p2
 
-func (b *BBox) MaxY() float64 {
-	if b.p1.y > b.p2.y {
-		return b.p1.y
-	} else {
-		return b.p2.y
-	}
-}
+	x1, y1 := p1.X, p1.Y
+	x2, y2 := p2.X, p2.Y
 
-func (b *BBox) MinX() float64 {
-	if b.p1.x > b.p2.x {
-		return b.p2.x
-	} else {
-		return b.p1.x
+	if x1 < x2 {
+		x1, x2 = x2, x1
 	}
-}
+	maxX, minX := x1, x2
 
-func (b *BBox) MinY() float64 {
-	if b.p1.y > b.p2.y {
-		return b.p2.y
-	} else {
-		return b.p1.y
+	if y1 < y2 {
+		y1, y2 = y2, y1
 	}
+	maxY, minY := y1, y2
+
+	bbox.Max = Point{maxX, maxY}
+	bbox.Min = Point{minX, minY}
+
+	return bbox
 }
