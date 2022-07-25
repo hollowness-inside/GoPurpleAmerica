@@ -99,6 +99,10 @@ func (r *Raw) Evaluate() (*Purple, error) {
 			}
 		}
 
+		if zipFile == nil {
+			return nil, ErrRegionName
+		}
+
 		f, _ := zipFile.Open()
 		defer f.Close()
 
