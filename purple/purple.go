@@ -118,5 +118,5 @@ func (p *Purple) GetSubregionColor(subregion string) color.RGBA {
 	if v, ok := p.stats[subregion]; ok {
 		return v
 	}
-	return color.RGBA{0, 0, 0, 255}
+	return color.RGBA{0, 0, 0, 0}
 }
