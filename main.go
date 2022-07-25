@@ -95,6 +95,7 @@ func createColorTable(output string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer f.Close()
 
 	_, err = f.WriteString("255 0 0\n0 255 0\n0 0 255")
 	if err != nil {
