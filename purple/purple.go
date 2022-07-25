@@ -47,23 +47,21 @@ func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
-	for _, county := range state.Counties {
+	counties := p.projectCounties()
+
+	for _, county := range counties {
 		clr := p.getCountyColor(county.Name)
 		gc.SetFillColor(clr)
 		gc.BeginPath()
 
 		start := county.Points[0]
-		xs := start.X - p.State.Bbox.Min.X
-		ys := p.State.Bbox.Max.Y - start.Y
-		gc.MoveTo(xs, ys)
 
+		gc.MoveTo(start.X, start.Y)
 		for _, point := range county.Points {
-			x := point.X - p.State.Bbox.Min.X
-			y := p.State.Bbox.Max.Y - point.Y
-			gc.LineTo(x, y)
+			gc.LineTo(point.X, point.Y)
 		}
+		gc.LineTo(start.X, start.Y)
 
-		gc.LineTo(xs, ys)
 		gc.Close()
 		gc.FillStroke()
 		gc.Fill(gc.Current.Path)
@@ -75,4 +73,27 @@ func (p *Purple) getCountyColor(county string) RGBA {
 		return v
 	}
 	return RGBA{0, 0, 0, 0}
+}
+
+func (p *Purple) projectCounties() []County {
+	counties := make([]County, p.State.CountiesN)
+
+	for n, county := range p.State.Counties {
+		newCounty := County{}
+
+		points := make([]Point, county.PointsN)
+		for i, point := range county.Points {
+			x := point.X - p.State.Bbox.Min.X
+			y := p.State.Bbox.Max.Y - point.Y
+			points[i] = Point{x, y}
+		}
+
+		newCounty.Name = county.Name
+		newCounty.PointsN = county.PointsN
+		newCounty.Points = points
+
+		counties[n] = newCounty
+	}
+
+	return counties
 }
