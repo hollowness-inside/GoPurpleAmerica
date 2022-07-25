@@ -51,7 +51,8 @@ func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
 	gc.SetLineWidth(p.StrokeWidth)
 
 	for _, county := range state.Counties {
-		gc.SetFillColor(p.GetCountyColor(county.Name))
+		clr := p.getCountyColor(county.Name)
+		gc.SetFillColor(clr)
 		gc.BeginPath()
 
 		start := county.Points[0]
@@ -71,7 +72,7 @@ func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
 	}
 }
 
-func (p *Purple) GetCountyColor(county string) RGBA {
+func (p *Purple) getCountyColor(county string) RGBA {
 	if v, ok := p.Stats[county]; ok {
 		return v
 	}
