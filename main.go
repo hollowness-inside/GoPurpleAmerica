@@ -1,11 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/MrPythoneer/nifty/purple_america/purple"
 )
+
+func Help() {
+	fmt.Println(`
+	purple [options] -r regions.zip -o output.svg
+	Options:
+	\t-c/--county COUNTY_ABBR\tSelects county to draw (USA by default)
+	\t-d/--data path.zip\tSelects archive containing statisics data
+	\t-r/--region path.zip\tSelects archive containing region points data
+	\t-y/--year INT\tSuffix of the state statistics file name
+	\t-n/--colors filepath\tDraws with colors presented in the file
+	\t-N/--new-color-table output\tSaves an example of a color file
+	\t--sw/--stroke-width FLOAT\tSets stroke width
+	\t--sc/--stroke-color R,G,B,A\tSets stroke color`)
+}
 
 func main() {
 	// TODO: Map scale
@@ -34,7 +49,6 @@ func main() {
 	// purple -n colors.txt
 
 	pRaw := purple.Raw{}
-	pRaw.RegionsPath = "regions.zip"
 
 	i := 1
 
@@ -46,13 +60,16 @@ func main() {
 		case "-d", "--data":
 			i++
 			pRaw.DataPath = os.Args[i]
+		case "-r", "--region":
+			i++
+			pRaw.RegionsPath = os.Args[i]
 		case "-y", "--year":
 			i++
 			pRaw.Year = os.Args[i]
 		case "-n", "--colors":
 			i++
 			pRaw.ColorTablePath = os.Args[i]
-		case "--nct", "--new-color-table":
+		case "-N", "--new-color-table":
 			createColorTable(os.Args[i])
 			return
 		case "--sw", "--stroke-width":
