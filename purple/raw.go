@@ -3,10 +3,13 @@ package purple
 import (
 	"archive/zip"
 	"bufio"
+	"errors"
 	"os"
 	"strconv"
 	"strings"
 )
+
+var ErrStateName = errors.New("unknown state name")
 
 type Raw struct {
 	RegionName  string
@@ -102,7 +105,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		}
 
 		if zipFile == nil {
-			return nil, ErrRegionName
+			return nil, ErrStateName
 		}
 
 		f, _ := zipFile.Open()
