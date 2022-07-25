@@ -8,15 +8,15 @@ import (
 	"github.com/MrPythoneer/nifty/purple_america/purple"
 )
 
-const HelpMsg = `purple [options] -r regions.zip -o output.svg
+const HelpMsg = `Usage: purple [options] -r regions.zip -o output.svg
 Options:
-	-c/--county COUNTY_ABBR	Selects county to draw (USA by default)
-	-d/--data path.zip	Selects archive containing statisics data
-	-r/--region path.zip	Selects archive containing region points data
-	-y/--year INT	Suffix of the state statistics file name
-	-n/--colors filepath	Draws with colors presented in the file
-	-N/--new-color-table output	Saves an example of a color file
-	-s/--scale FLOAT	Scales the result by the given factor (10 by default)
+	-c/--county COUNTY_ABBR		Selects county to draw (USA by default)
+	-d/--data path.zip		Selects archive containing statisics data
+	-r/--region path.zip		Selects archive containing region points data
+	-y/--year INT			Suffix of the state statistics file name
+	-n/--colors filepath		Draws with colors presented in the file
+	-N/--nct output			Saves an example of a color file
+	-s/--scale FLOAT		Scales the result by the given factor (10 by default)
 	--sw/--stroke-width FLOAT	Sets stroke width
 	--sc/--stroke-color R,G,B,A	Sets stroke color`
 
@@ -50,7 +50,7 @@ func main() {
 		case "-n", "--colors":
 			i++
 			pRaw.ColorTablePath = os.Args[i]
-		case "-N", "--new-color-table":
+		case "-N", "--nct":
 			i++
 			createColorTable(os.Args[i])
 			return
