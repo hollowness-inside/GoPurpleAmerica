@@ -2,6 +2,7 @@ package purple
 
 import (
 	"archive/zip"
+	"fmt"
 	"image/color"
 
 	"github.com/llgcode/draw2d/draw2dsvg"
@@ -18,12 +19,14 @@ type Purple struct {
 	dataArchive    *zip.ReadCloser
 	regionsArchive *zip.ReadCloser
 
+	scale      float64
 	outputPath string
 }
 
 func (p *Purple) UseDefault() {
 	p.county = "USA"
-	p.strokeWidth = 0.5
+	p.scale = 10
+	p.strokeWidth = 0.2
 	p.strokeColor = color.RGBA{0, 0, 0, 255}
 	p.colors = [3][3]int{
 		{255, 0, 0},
@@ -48,13 +51,19 @@ func (p *Purple) ParseCounty() *County {
 }
 
 func (p *Purple) Draw() {
-	county := p.ParseCounty()
-
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
 
+	county := p.ParseCounty()
+	width := county.Bbox.MaxX() - county.Bbox.MinX()
+	height := county.Bbox.MaxY() - county.Bbox.MinY()
+
+	svg.Width = fmt.Sprintf("%fpx", width)
+	svg.Height = fmt.Sprintf("%fpx", height)
+
 	p.drawCounty(county, gc)
 
+	gc.Scale(p.scale, p.scale)
 	draw2dsvg.SaveToSvgFile(p.outputPath, svg)
 }
 

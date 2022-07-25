@@ -19,7 +19,8 @@ func Help() {
 	\t-n/--colors filepath\tDraws with colors presented in the file
 	\t-N/--new-color-table output\tSaves an example of a color file
 	\t--sw/--stroke-width FLOAT\tSets stroke width
-	\t--sc/--stroke-color R,G,B,A\tSets stroke color`)
+	\t--sc/--stroke-color R,G,B,A\tSets stroke color
+	\t-s/--scale FLOAT\tScales the result by the given factor`)
 }
 
 func main() {
@@ -81,6 +82,9 @@ func main() {
 		case "--sc", "--stroke-color":
 			i++
 			pRaw.StrokeColor = os.Args[i]
+		case "-s", "--scale":
+			i++
+			pRaw.Scale = os.Args[i]
 		}
 
 		i++

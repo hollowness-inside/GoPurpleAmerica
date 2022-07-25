@@ -19,6 +19,7 @@ type Raw struct {
 
 	StrokeWidth string
 	StrokeColor string
+	Scale       string
 }
 
 func (r *Raw) Evaluate() (*Purple, error) {
@@ -127,6 +128,15 @@ func (r *Raw) Evaluate() (*Purple, error) {
 	}
 
 	p.outputPath = r.OutputPath
+
+	if r.Scale != "" {
+		v, err := strconv.ParseFloat(r.Scale, 64)
+		if err != nil {
+			return nil, err
+		}
+
+		p.scale = v
+	}
 
 	return p, nil
 }
