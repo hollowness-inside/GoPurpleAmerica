@@ -28,59 +28,59 @@ Options:
 	-sc/--stroke-color R,G,B,A	Sets stroke color`
 
 func main() {
-	pRaw := purple.Raw{}
+	args := purple.Arguments{}
 
 	i := 1
 	for i < len(os.Args) {
 		switch os.Args[i] {
 		case "-r", "--region":
 			i++
-			pRaw.RegionName = os.Args[i]
+			args.RegionName = os.Args[i]
 		case "-rd", "--regions-data":
 			i++
-			pRaw.RegionsPath = os.Args[i]
+			args.RegionsPath = os.Args[i]
 		case "-o", "--output":
 			i++
-			pRaw.OutputPath = os.Args[i]
+			args.OutputPath = os.Args[i]
 		case "-d", "--data":
 			i++
-			pRaw.DataPath = os.Args[i]
+			args.DataPath = os.Args[i]
 		case "-y", "--year":
 			i++
-			pRaw.Year = os.Args[i]
+			args.Year = os.Args[i]
 		case "-n", "--colors":
 			i++
-			pRaw.ColorsPath = os.Args[i]
+			args.ColorsPath = os.Args[i]
 		case "-N":
 			i++
 			createColorTable(os.Args[i])
 			return
 		case "-sw", "--stroke-width":
 			i++
-			pRaw.StrokeWidth = os.Args[i]
+			args.StrokeWidth = os.Args[i]
 		case "-sc", "--stroke-color":
 			i++
-			pRaw.StrokeColor = os.Args[i]
+			args.StrokeColor = os.Args[i]
 		case "-s", "--scale":
 			i++
-			pRaw.Scale = os.Args[i]
+			args.Scale = os.Args[i]
 		}
 		i++
 	}
 
-	if pRaw.RegionsPath == "" {
+	if args.RegionsPath == "" {
 		fmt.Println("Please provide regions data archive")
 		fmt.Println(HelpMsg)
 		return
 	}
 
-	if pRaw.OutputPath == "" {
+	if args.OutputPath == "" {
 		fmt.Println("Please provide output file path")
 		fmt.Println(HelpMsg)
 		return
 	}
 
-	p, err := pRaw.Evaluate()
+	p, err := args.Evaluate()
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -11,7 +11,7 @@ import (
 
 var ErrStateName = errors.New("unknown state name")
 
-type Raw struct {
+type Arguments struct {
 	RegionName  string
 	RegionsPath string
 	DataPath    string
@@ -24,14 +24,7 @@ type Raw struct {
 	StrokeColor string
 }
 
-func (r *Raw) UseDefaults() {
-	r.RegionName = "USA"
-	r.Scale = "10"
-	r.StrokeColor = "0,0,0,255"
-	r.StrokeWidth = "0.01"
-}
-
-func (r *Raw) Evaluate() (*Purple, error) {
+func (r *Arguments) Evaluate() (*Purple, error) {
 	p := new(Purple)
 	p.UseDefaults()
 
