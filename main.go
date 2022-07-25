@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/MrPythoneer/nifty/purple_america/purple"
+	"github.com/MrPythoneer/nifty/purple/purple"
 )
 
 const HelpMsg = `Usage: purple [options] -r regions.zip -o output.svg

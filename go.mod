@@ -1,4 +1,4 @@
-module github.com/MrPythoneer/nifty/purple_america
+module github.com/MrPythoneer/nifty/purple
 
 go 1.18
 
