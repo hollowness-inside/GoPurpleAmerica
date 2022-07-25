@@ -10,7 +10,7 @@ import (
 
 type Purple struct {
 	regionName string
-	year       int
+	year       string
 	colors     [3]color.RGBA
 
 	strokeWidth float64

@@ -59,13 +59,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		p.region = ReadRegion(f)
 	}
 
-	if r.Year != "" {
-		year, err := strconv.Atoi(r.Year)
-		if err != nil {
-			return nil, err
-		}
-		p.year = year
-	}
+	p.year = r.Year
 
 	if r.StrokeWidth != "" {
 		v, err := strconv.ParseFloat(r.StrokeWidth, 64)
