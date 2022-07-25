@@ -8,20 +8,17 @@ import (
 	"github.com/MrPythoneer/nifty/purple_america/purple"
 )
 
-func Help() {
-	fmt.Println(`
-	purple [options] -r regions.zip -o output.svg
-	Options:
-	\t-c/--county COUNTY_ABBR\tSelects county to draw (USA by default)
-	\t-d/--data path.zip\tSelects archive containing statisics data
-	\t-r/--region path.zip\tSelects archive containing region points data
-	\t-y/--year INT\tSuffix of the state statistics file name
-	\t-n/--colors filepath\tDraws with colors presented in the file
-	\t-N/--new-color-table output\tSaves an example of a color file
-	\t--sw/--stroke-width FLOAT\tSets stroke width
-	\t--sc/--stroke-color R,G,B,A\tSets stroke color
-	\t-s/--scale FLOAT\tScales the result by the given factor (10 by default)`)
-}
+const HelpMsg = `purple [options] -r regions.zip -o output.svg
+Options:
+	-c/--county COUNTY_ABBR	Selects county to draw (USA by default)
+	-d/--data path.zip	Selects archive containing statisics data
+	-r/--region path.zip	Selects archive containing region points data
+	-y/--year INT	Suffix of the state statistics file name
+	-n/--colors filepath	Draws with colors presented in the file
+	-N/--new-color-table output	Saves an example of a color file
+	-s/--scale FLOAT	Scales the result by the given factor (10 by default)
+	--sw/--stroke-width FLOAT	Sets stroke width
+	--sc/--stroke-color R,G,B,A	Sets stroke color`
 
 func main() {
 	// TODO: County abbreviation or full name
@@ -54,6 +51,7 @@ func main() {
 			i++
 			pRaw.ColorTablePath = os.Args[i]
 		case "-N", "--new-color-table":
+			i++
 			createColorTable(os.Args[i])
 			return
 		case "--sw", "--stroke-width":
@@ -72,7 +70,7 @@ func main() {
 
 	if pRaw.RegionsPath == "" || pRaw.OutputPath == "" {
 		fmt.Println("Please provide output file name and regions data archive")
-		Help()
+		fmt.Println(HelpMsg)
 		return
 	}
 
@@ -85,5 +83,13 @@ func main() {
 }
 
 func createColorTable(output string) {
+	f, err := os.Create(output)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	_, err = f.WriteString("255 0 0\n0 255 0\n0 0 255")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
