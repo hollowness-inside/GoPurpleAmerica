@@ -73,6 +73,17 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 		}
 	}
 
+	p.OutputPath = args.OutputPath
+
+	if args.Scale != "" {
+		v, err := strconv.ParseFloat(args.Scale, 64)
+		if err != nil {
+			return nil, err
+		}
+
+		p.Scale = v
+	}
+
 	if args.StrokeWidth != "" {
 		v, err := strconv.ParseFloat(args.StrokeWidth, 64)
 		if err != nil {
@@ -88,17 +99,6 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 		}
 
 		p.StrokeColor = clr
-	}
-
-	p.OutputPath = args.OutputPath
-
-	if args.Scale != "" {
-		v, err := strconv.ParseFloat(args.Scale, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		p.Scale = v
 	}
 
 	return p, nil
