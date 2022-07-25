@@ -3,6 +3,7 @@ package purple
 import (
 	"fmt"
 	"image/color"
+	"sync"
 
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
@@ -76,23 +77,42 @@ func (p *Purple) getCountyColor(county string) RGBA {
 }
 
 func (p *Purple) projectCounties() []County {
+	countiesCh := make(chan County)
+
+	wg := &sync.WaitGroup{}
+
+	for _, county := range p.State.Counties {
+		wg.Add(1)
+		go func(county County) {
+			newCounty := County{}
+
+			points := make([]Point, county.PointsN)
+			for i, point := range county.Points {
+				x := point.X - p.State.Bbox.Min.X
+				y := p.State.Bbox.Max.Y - point.Y
+				points[i] = Point{x, y}
+			}
+
+			newCounty.Name = county.Name
+			newCounty.PointsN = county.PointsN
+			newCounty.Points = points
+
+			countiesCh <- newCounty
+			wg.Done()
+		}(county)
+	}
+
+	go func() {
+		wg.Wait()
+		close(countiesCh)
+	}()
+
 	counties := make([]County, p.State.CountiesN)
 
-	for n, county := range p.State.Counties {
-		newCounty := County{}
-
-		points := make([]Point, county.PointsN)
-		for i, point := range county.Points {
-			x := point.X - p.State.Bbox.Min.X
-			y := p.State.Bbox.Max.Y - point.Y
-			points[i] = Point{x, y}
-		}
-
-		newCounty.Name = county.Name
-		newCounty.PointsN = county.PointsN
-		newCounty.Points = points
-
-		counties[n] = newCounty
+	i := 0
+	for c := range countiesCh {
+		counties[i] = c
+		i++
 	}
 
 	return counties
