@@ -11,7 +11,7 @@ type regionReader struct {
 	bufio.Scanner
 }
 
-func ReadRegion(r io.Reader) *State {
+func ReadState(r io.Reader) any {
 	sc := newRegionReader(r)
 	return sc.scanRegion()
 }

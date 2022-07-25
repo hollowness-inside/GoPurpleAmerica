@@ -75,7 +75,7 @@ func (p *Purple) drawRegion(region *State, gc *draw2dsvg.GraphicContext) {
 	}
 }
 
-func ReadStatistics(r io.Reader) map[string]RGBA {
+func ReadStatistics(r io.Reader) any {
 	data := make(map[string]RGBA, 0)
 
 	reader := bufio.NewScanner(r)

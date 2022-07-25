@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"errors"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -12,54 +13,52 @@ import (
 var ErrStateName = errors.New("unknown state name")
 
 type Arguments struct {
-	RegionName  string
-	RegionsPath string
-	Year        string
-	StatsPath   string
-	ColorsPath  string
-	OutputPath  string
+	StateName  string
+	StatesPath string
+	Year       string
+	StatsPath  string
+	ColorsPath string
+	OutputPath string
 
 	Scale       string
 	StrokeWidth string
 	StrokeColor string
 }
 
-func (r *Arguments) Evaluate() (*Purple, error) {
+func (args *Arguments) Evaluate() (*Purple, error) {
 	p := new(Purple)
 	p.UseDefaults()
 
-	if r.RegionsPath != "" {
-		reader, err := zip.OpenReader(r.RegionsPath)
+	if args.StatesPath != "" {
+		state, err := zipOpen(args.StatesPath, args.StateName, ReadState)
 		if err != nil {
 			return nil, err
 		}
-		defer reader.Close()
 
-		var zipFile *zip.File
-		for _, f := range reader.File {
-			if f.Name == r.RegionName+".txt" {
-				zipFile = f
-			}
-		}
-
-		f, _ := zipFile.Open()
-		defer f.Close()
-
-		p.Region = ReadRegion(f)
+		p.Region = state.(*State)
 	}
 
-	p.Year = r.Year
+	p.Year = args.Year
 
-	if r.StrokeWidth != "" {
-		v, err := strconv.ParseFloat(r.StrokeWidth, 64)
+	if args.StatsPath != "" {
+		stats, err := zipOpen(args.StatesPath, args.StateName, ReadStatistics)
+		if err != nil {
+			return nil, err
+		}
+
+		p.Stats = stats.(map[string]RGBA)
+	}
+
+	if args.StrokeWidth != "" {
+		v, err := strconv.ParseFloat(args.StrokeWidth, 64)
 		if err != nil {
 			return nil, err
 		}
 		p.StrokeWidth = v
 	}
 
-	if r.StrokeColor != "" {
-		split := strings.Split(r.StrokeColor, ",")
+	if args.StrokeColor != "" {
+		split := strings.Split(args.StrokeColor, ",")
 		r, err := strconv.Atoi(split[0])
 		if err != nil {
 			return nil, err
@@ -83,32 +82,8 @@ func (r *Arguments) Evaluate() (*Purple, error) {
 		p.StrokeColor = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
-	if r.StatsPath != "" {
-		reader, err := zip.OpenReader(r.StatsPath)
-		if err != nil {
-			return nil, err
-		}
-		defer reader.Close()
-
-		var zipFile *zip.File
-		for _, f := range reader.File {
-			if f.Name == r.RegionName+p.Year+".txt" {
-				zipFile = f
-			}
-		}
-
-		if zipFile == nil {
-			return nil, ErrStateName
-		}
-
-		f, _ := zipFile.Open()
-		defer f.Close()
-
-		p.Stats = ReadStatistics(f)
-	}
-
-	if r.ColorsPath != "" && r.StatsPath != "" {
-		f, err := os.Open(r.ColorsPath)
+	if args.ColorsPath != "" && args.StatsPath != "" {
+		f, err := os.Open(args.ColorsPath)
 		if err != nil {
 			return nil, err
 		}
@@ -148,10 +123,10 @@ func (r *Arguments) Evaluate() (*Purple, error) {
 		}
 	}
 
-	p.OutputPath = r.OutputPath
+	p.OutputPath = args.OutputPath
 
-	if r.Scale != "" {
-		v, err := strconv.ParseFloat(r.Scale, 64)
+	if args.Scale != "" {
+		v, err := strconv.ParseFloat(args.Scale, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -160,4 +135,27 @@ func (r *Arguments) Evaluate() (*Purple, error) {
 	}
 
 	return p, nil
+}
+
+func zipOpen(filepath, name string, read func(r io.Reader) any) (any, error) {
+	reader, err := zip.OpenReader(filepath)
+	if err != nil {
+		return nil, err
+	}
+	defer reader.Close()
+
+	var zipFile *zip.File
+	for _, v := range reader.File {
+		if v.Name == name+".txt" {
+			zipFile = v
+		}
+	}
+
+	f, err := zipFile.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	return read(f), nil
 }

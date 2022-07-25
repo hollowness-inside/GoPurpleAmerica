@@ -35,10 +35,10 @@ func main() {
 		switch os.Args[i] {
 		case "-r", "--region":
 			i++
-			args.RegionName = os.Args[i]
+			args.StateName = os.Args[i]
 		case "-rd", "--regions-data":
 			i++
-			args.RegionsPath = os.Args[i]
+			args.StatesPath = os.Args[i]
 		case "-o", "--output":
 			i++
 			args.OutputPath = os.Args[i]
@@ -68,7 +68,7 @@ func main() {
 		i++
 	}
 
-	if args.RegionsPath == "" {
+	if args.StatesPath == "" {
 		fmt.Println("Please provide regions data archive")
 		fmt.Println(HelpMsg)
 		return
