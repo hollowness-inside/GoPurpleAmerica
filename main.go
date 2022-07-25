@@ -20,7 +20,7 @@ func Help() {
 	\t-N/--new-color-table output\tSaves an example of a color file
 	\t--sw/--stroke-width FLOAT\tSets stroke width
 	\t--sc/--stroke-color R,G,B,A\tSets stroke color
-	\t-s/--scale FLOAT\tScales the result by the given factor`)
+	\t-s/--scale FLOAT\tScales the result by the given factor (10 by default)`)
 }
 
 func main() {
