@@ -31,7 +31,6 @@ func main() {
 	pRaw := purple.Raw{}
 
 	i := 1
-
 	for i < len(os.Args) {
 		switch os.Args[i] {
 		case "-r", "--region":
@@ -66,7 +65,6 @@ func main() {
 			i++
 			pRaw.Scale = os.Args[i]
 		}
-
 		i++
 	}
 
@@ -97,8 +95,7 @@ func createColorTable(output string) {
 	}
 	defer f.Close()
 
-	_, err = f.WriteString("255 0 0\n0 255 0\n0 0 255")
-	if err != nil {
+	if _, err = f.WriteString("255 0 0\n0 255 0\n0 0 255"); err != nil {
 		log.Fatal(err)
 	}
 }
