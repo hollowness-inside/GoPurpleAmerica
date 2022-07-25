@@ -49,26 +49,6 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 		p.Stats = stats.(map[string]RGBA)
 	}
 
-	if args.StrokeWidth != "" {
-		v, err := strconv.ParseFloat(args.StrokeWidth, 64)
-		if err != nil {
-			return nil, err
-		}
-		p.StrokeWidth = v
-	}
-
-	if args.StrokeColor != "" {
-		split := strings.Split(args.StrokeColor, ",")
-		rgba, err := AtoiMany(split...)
-		if err != nil {
-			return nil, err
-		}
-
-
-
-		p.StrokeColor = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-	}
-
 	if args.ColorsPath != "" && args.StatsPath != "" {
 		f, err := os.Open(args.ColorsPath)
 		if err != nil {
@@ -84,30 +64,30 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 				return nil, sc.Err()
 			}
 
-			rgbText := sc.Text()
-			rgb := strings.Split(rgbText, " ")
-			r, err := strconv.Atoi(rgb[0])
+			clr, err := ParseRGBA(sc.Text())
 			if err != nil {
 				return nil, err
 			}
 
-			g, err := strconv.Atoi(rgb[1])
-			if err != nil {
-				return nil, err
-			}
-
-			b, err := strconv.Atoi(rgb[2])
-			if err != nil {
-				return nil, err
-			}
-
-			a, err := strconv.Atoi(rgb[3])
-			if err != nil {
-				return nil, err
-			}
-
-			colors[i] = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+			colors[i] = clr
 		}
+	}
+
+	if args.StrokeWidth != "" {
+		v, err := strconv.ParseFloat(args.StrokeWidth, 64)
+		if err != nil {
+			return nil, err
+		}
+		p.StrokeWidth = v
+	}
+
+	if args.StrokeColor != "" {
+		clr, err := ParseRGBA(args.StrokeColor)
+		if err != nil {
+			return nil, err
+		}
+
+		p.StrokeColor = clr
 	}
 
 	p.OutputPath = args.OutputPath
@@ -161,3 +141,17 @@ func AtoiMany(many ...string) ([]int, error) {
 	return res, nil
 }
 
+func ParseRGBA(text string) (RGBA, error) {
+	split := strings.Split(text, ",")
+	rgba, err := AtoiMany(split...)
+	if err != nil {
+		return RGBA{}, err
+	}
+
+	r := uint8(rgba[0])
+	g := uint8(rgba[1])
+	b := uint8(rgba[2])
+	a := uint8(rgba[3])
+
+	return RGBA{r, g, b, a}, nil
+}
