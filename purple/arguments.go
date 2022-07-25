@@ -59,25 +59,12 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 
 	if args.StrokeColor != "" {
 		split := strings.Split(args.StrokeColor, ",")
-		r, err := strconv.Atoi(split[0])
+		rgba, err := AtoiMany(split...)
 		if err != nil {
 			return nil, err
 		}
 
-		g, err := strconv.Atoi(split[1])
-		if err != nil {
-			return nil, err
-		}
 
-		b, err := strconv.Atoi(split[2])
-		if err != nil {
-			return nil, err
-		}
-
-		a, err := strconv.Atoi(split[3])
-		if err != nil {
-			return nil, err
-		}
 
 		p.StrokeColor = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
@@ -159,3 +146,18 @@ func zipOpen(filepath, name string, read func(r io.Reader) any) (any, error) {
 
 	return read(f), nil
 }
+
+func AtoiMany(many ...string) ([]int, error) {
+	res := make([]int, len(many))
+	for i, str := range many {
+		v, err := strconv.Atoi(str)
+		if err != nil {
+			return nil, err
+		}
+
+		res[i] = v
+	}
+
+	return res, nil
+}
+
