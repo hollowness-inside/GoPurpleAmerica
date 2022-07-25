@@ -35,15 +35,15 @@ func main() {
 		case "-r", "--region":
 			i++
 			pRaw.Region = os.Args[i]
-		case "-d", "--data":
-			i++
-			pRaw.DataPath = os.Args[i]
 		case "-rd", "--regions-data":
 			i++
 			pRaw.RegionsPath = os.Args[i]
 		case "-o", "--output":
 			i++
 			pRaw.OutputPath = os.Args[i]
+		case "-d", "--data":
+			i++
+			pRaw.DataPath = os.Args[i]
 		case "-y", "--year":
 			i++
 			pRaw.Year = os.Args[i]
