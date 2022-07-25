@@ -3,7 +3,6 @@ package purple
 import (
 	"archive/zip"
 	"bufio"
-	"image/color"
 	"os"
 	"strconv"
 	"strings"
@@ -85,7 +84,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 			return nil, err
 		}
 
-		p.StrokeColor = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+		p.StrokeColor = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
 	if r.DataPath != "" {
@@ -121,7 +120,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 
 		sc := bufio.NewScanner(f)
 
-		colors := [3]color.RGBA{}
+		colors := [3]RGBA{}
 		for i := 0; i < 3; i++ {
 			if !(sc.Scan() && sc.Err() == nil) {
 				return nil, sc.Err()
@@ -149,7 +148,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 				return nil, err
 			}
 
-			colors[i] = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+			colors[i] = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 		}
 	}
 

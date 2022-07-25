@@ -11,22 +11,24 @@ import (
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
 
+type RGBA = color.RGBA
+
 type Purple struct {
 	Region *State
 	Year   string
 
-	Stats      map[string]color.RGBA
+	Stats      map[string]RGBA
 	OutputPath string
 
 	Scale       float64
 	StrokeWidth float64
-	StrokeColor color.RGBA
+	StrokeColor RGBA
 }
 
 func (p *Purple) UseDefaults() {
 	p.Scale = 10
 	p.StrokeWidth = 0.2
-	p.StrokeColor = color.RGBA{0, 0, 0, 255}
+	p.StrokeColor = RGBA{0, 0, 0, 255}
 }
 
 func (p *Purple) Draw() {
@@ -73,8 +75,8 @@ func (p *Purple) drawRegion(region *State, gc *draw2dsvg.GraphicContext) {
 	}
 }
 
-func ReadStatistics(r io.Reader) map[string]color.RGBA {
-	data := make(map[string]color.RGBA, 0)
+func ReadStatistics(r io.Reader) map[string]RGBA {
+	data := make(map[string]RGBA, 0)
 
 	reader := bufio.NewScanner(r)
 
@@ -105,15 +107,15 @@ func ReadStatistics(r io.Reader) map[string]color.RGBA {
 		g := uint8((r2 / sum) * 255)
 		b := uint8((r3 / sum) * 255)
 
-		data[row[0]] = color.RGBA{r, g, b, 255}
+		data[row[0]] = RGBA{r, g, b, 255}
 	}
 
 	return data
 }
 
-func (p *Purple) GetSubregionColor(subregion string) color.RGBA {
+func (p *Purple) GetSubregionColor(subregion string) RGBA {
 	if v, ok := p.Stats[subregion]; ok {
 		return v
 	}
-	return color.RGBA{0, 0, 0, 0}
+	return RGBA{0, 0, 0, 0}
 }
