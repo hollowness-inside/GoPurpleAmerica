@@ -19,8 +19,7 @@ type Purple struct {
 	strokeColor color.RGBA
 
 	region *Region
-
-	stats map[string]color.RGBA
+	stats  map[string]color.RGBA
 
 	scale      float64
 	outputPath string
