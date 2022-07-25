@@ -30,15 +30,6 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		p.regionName = r.Region
 	}
 
-	if r.DataPath != "" {
-		reader, err := zip.OpenReader(r.DataPath)
-		if err != nil {
-			return nil, err
-		}
-
-		p.dataArchive = reader
-	}
-
 	if r.RegionsPath != "" {
 		reader, err := zip.OpenReader(r.RegionsPath)
 		if err != nil {
@@ -94,7 +85,27 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		p.strokeColor = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
-	if r.ColorTablePath != "" {
+	if r.DataPath != "" {
+		reader, err := zip.OpenReader(r.DataPath)
+		if err != nil {
+			return nil, err
+		}
+		defer reader.Close()
+
+		var zipFile *zip.File
+		for _, f := range reader.File {
+			if f.Name == p.regionName+p.year+".txt" {
+				zipFile = f
+			}
+		}
+
+		f, _ := zipFile.Open()
+		defer f.Close()
+
+		p.statistics = ReadStatistics(f)
+	}
+
+	if r.ColorTablePath != "" && r.DataPath != "" {
 		f, err := os.Open(r.ColorTablePath)
 		if err != nil {
 			return nil, err
@@ -134,7 +145,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 			colors[i] = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 		}
 
-		p.colors = colors
+		p.statistics.colors = colors
 	}
 
 	p.outputPath = r.OutputPath

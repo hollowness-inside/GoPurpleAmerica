@@ -1,7 +1,6 @@
 package purple
 
 import (
-	"archive/zip"
 	"fmt"
 	"image/color"
 
@@ -11,13 +10,12 @@ import (
 type Purple struct {
 	regionName string
 	year       string
-	colors     [3]color.RGBA
 
 	strokeWidth float64
 	strokeColor color.RGBA
 
-	dataArchive *zip.ReadCloser
-	region      *Region
+	statistics *Statistics
+	region     *Region
 
 	scale      float64
 	outputPath string
@@ -28,11 +26,6 @@ func (p *Purple) UseDefault() {
 	p.scale = 10
 	p.strokeWidth = 0.2
 	p.strokeColor = color.RGBA{0, 0, 0, 255}
-	p.colors = [3]color.RGBA{
-		{255, 0, 0, 255},
-		{0, 255, 0, 255},
-		{0, 0, 255, 255},
-	}
 }
 
 func (p *Purple) Draw() {
