@@ -98,7 +98,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 
 		sc := bufio.NewScanner(f)
 
-		colors := [3][3]int{}
+		colors := [3]color.RGBA{}
 		for i := 0; i < 3; i++ {
 			if !(sc.Scan() && sc.Err() == nil) {
 				return nil, sc.Err()
@@ -121,7 +121,12 @@ func (r *Raw) Evaluate() (*Purple, error) {
 				return nil, err
 			}
 
-			colors[i] = [3]int{r, g, b}
+			a, err := strconv.Atoi(rgb[3])
+			if err != nil {
+				return nil, err
+			}
+
+			colors[i] = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 		}
 
 		p.colors = colors

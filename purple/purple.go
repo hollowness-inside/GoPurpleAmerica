@@ -11,7 +11,7 @@ import (
 type Purple struct {
 	region string
 	year   int
-	colors [3][3]int
+	colors [3]color.RGBA
 
 	strokeWidth float64
 	strokeColor color.RGBA
@@ -28,10 +28,10 @@ func (p *Purple) UseDefault() {
 	p.scale = 10
 	p.strokeWidth = 0.2
 	p.strokeColor = color.RGBA{0, 0, 0, 255}
-	p.colors = [3][3]int{
-		{255, 0, 0},
-		{0, 255, 0},
-		{0, 0, 255},
+	p.colors = [3]color.RGBA{
+		color.RGBA{255, 0, 0, 255},
+		color.RGBA{0, 255, 0, 255},
+		color.RGBA{0, 0, 255, 255},
 	}
 }
 
