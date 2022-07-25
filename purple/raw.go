@@ -56,8 +56,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		f, _ := zipFile.Open()
 		defer f.Close()
 
-		s := NewScanner(f)
-		p.region = s.ScanRegion()
+		p.region = ReadRegion(f)
 	}
 
 	if r.Year != "" {

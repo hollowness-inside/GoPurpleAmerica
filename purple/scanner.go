@@ -7,16 +7,21 @@ import (
 	"strings"
 )
 
-type Scanner struct {
+type regionReader struct {
 	bufio.Scanner
 }
 
-func NewScanner(r io.Reader) *Scanner {
-	return &Scanner{*bufio.NewScanner(r)}
+func ReadRegion(r io.Reader) *Region {
+	sc := newRegionReader(r)
+	return sc.scanRegion()
 }
 
-func (sc *Scanner) ScanPoint() Point {
-	xy := strings.Split(sc.ScanString(), "   ")
+func newRegionReader(r io.Reader) *regionReader {
+	return &regionReader{*bufio.NewScanner(r)}
+}
+
+func (sc *regionReader) scanPoint() Point {
+	xy := strings.Split(sc.scanString(), "   ")
 
 	xs := strings.TrimSpace(xy[0])
 	ys := strings.TrimSpace(xy[1])
@@ -27,39 +32,39 @@ func (sc *Scanner) ScanPoint() Point {
 	return Point{x, y}
 }
 
-func (sc *Scanner) ScanBBox() BBox {
-	p1 := sc.ScanPoint()
-	p2 := sc.ScanPoint()
+func (sc *regionReader) scanBBox() BBox {
+	p1 := sc.scanPoint()
+	p2 := sc.scanPoint()
 
 	return BBox{p1, p2}
 }
 
-func (sc *Scanner) ScanInt() int {
-	v, _ := strconv.Atoi(sc.ScanString())
+func (sc *regionReader) scanInt() int {
+	v, _ := strconv.Atoi(sc.scanString())
 	return v
 }
 
-func (sc *Scanner) ScanString() string {
+func (sc *regionReader) scanString() string {
 	sc.Scan()
 	return sc.Text()
 }
 
-func (sc *Scanner) ScanRegion() *Region {
+func (sc *regionReader) scanRegion() *Region {
 	reg := new(Region)
-	reg.Bbox = sc.ScanBBox()
-	reg.SubregionsN = sc.ScanInt()
+	reg.Bbox = sc.scanBBox()
+	reg.SubregionsN = sc.scanInt()
 
 	reg.Subregions = make([]Subregion, reg.SubregionsN)
 	for i := 0; i < reg.SubregionsN; i++ {
 		sc.Scan()
 
-		name := sc.ScanString()
-		regionName := sc.ScanString()
-		n := sc.ScanInt()
+		name := sc.scanString()
+		regionName := sc.scanString()
+		n := sc.scanInt()
 
 		points := make([]Point, n)
 		for j := 0; j < n; j++ {
-			points[j] = sc.ScanPoint()
+			points[j] = sc.scanPoint()
 		}
 
 		reg.Subregions[i] = Subregion{
