@@ -58,12 +58,12 @@ func (p *Purple) Draw() {
 	width := county.Bbox.MaxX() - county.Bbox.MinX()
 	height := county.Bbox.MaxY() - county.Bbox.MinY()
 
-	svg.Width = fmt.Sprintf("%fpx", width)
-	svg.Height = fmt.Sprintf("%fpx", height)
-
-	p.drawCounty(county, gc)
+	svg.Width = fmt.Sprintf("%fpx", width*p.scale)
+	svg.Height = fmt.Sprintf("%fpx", height*p.scale)
 
 	gc.Scale(p.scale, p.scale)
+	p.drawCounty(county, gc)
+
 	draw2dsvg.SaveToSvgFile(p.outputPath, svg)
 }
 
