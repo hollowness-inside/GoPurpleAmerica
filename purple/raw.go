@@ -37,6 +37,15 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		p.dataArchive = reader
 	}
 
+	if r.RegionsPath != "" {
+		reader, err := zip.OpenReader(r.RegionsPath)
+		if err != nil {
+			return nil, err
+		}
+
+		p.regionsArchive = reader
+	}
+
 	if r.Year != "" {
 		year, err := strconv.Atoi(r.Year)
 		if err != nil {
@@ -76,22 +85,6 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		}
 
 		p.strokeColor = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-	}
-
-	{
-		var reader *zip.ReadCloser
-		var err error
-
-		if r.RegionsPath != "" {
-			reader, err = zip.OpenReader(r.RegionsPath)
-		} else {
-			reader, err = zip.OpenReader(r.RegionsPath)
-		}
-
-		if err != nil {
-			return nil, err
-		}
-		p.regionsArchive = reader
 	}
 
 	if r.ColorTablePath != "" {
