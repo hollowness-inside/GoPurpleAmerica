@@ -44,7 +44,7 @@ func main() {
 			args.OutputPath = os.Args[i]
 		case "-d", "--data":
 			i++
-			args.DataPath = os.Args[i]
+			args.StatsPath = os.Args[i]
 		case "-y", "--year":
 			i++
 			args.Year = os.Args[i]

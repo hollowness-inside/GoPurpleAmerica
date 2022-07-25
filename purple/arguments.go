@@ -14,8 +14,8 @@ var ErrStateName = errors.New("unknown state name")
 type Arguments struct {
 	RegionName  string
 	RegionsPath string
-	DataPath    string
 	Year        string
+	StatsPath   string
 	ColorsPath  string
 	OutputPath  string
 
@@ -83,8 +83,8 @@ func (r *Arguments) Evaluate() (*Purple, error) {
 		p.StrokeColor = RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
-	if r.DataPath != "" {
-		reader, err := zip.OpenReader(r.DataPath)
+	if r.StatsPath != "" {
+		reader, err := zip.OpenReader(r.StatsPath)
 		if err != nil {
 			return nil, err
 		}
@@ -107,7 +107,7 @@ func (r *Arguments) Evaluate() (*Purple, error) {
 		p.Stats = ReadStatistics(f)
 	}
 
-	if r.ColorsPath != "" && r.DataPath != "" {
+	if r.ColorsPath != "" && r.StatsPath != "" {
 		f, err := os.Open(r.ColorsPath)
 		if err != nil {
 			return nil, err
