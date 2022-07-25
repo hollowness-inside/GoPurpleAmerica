@@ -1,12 +1,8 @@
 package purple
 
 import (
-	"bufio"
 	"fmt"
 	"image/color"
-	"io"
-	"strconv"
-	"strings"
 
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
@@ -73,44 +69,6 @@ func (p *Purple) drawRegion(region *State, gc *draw2dsvg.GraphicContext) {
 		gc.FillStroke()
 		gc.Fill(gc.Current.Path)
 	}
-}
-
-func ReadStatistics(r io.Reader) any {
-	data := make(map[string]RGBA, 0)
-
-	reader := bufio.NewScanner(r)
-
-	// Skipping the header
-	reader.Scan()
-
-	for reader.Scan() {
-		row := strings.Split(reader.Text(), ",")
-
-		r1, err := strconv.ParseFloat(row[1], 64)
-		if err != nil {
-			return nil
-		}
-
-		r2, err := strconv.ParseFloat(row[2], 64)
-		if err != nil {
-			return nil
-		}
-
-		r3, err := strconv.ParseFloat(row[3], 64)
-		if err != nil {
-			return nil
-		}
-
-		sum := r1 + r2 + r3
-
-		r := uint8((r1 / sum) * 255)
-		g := uint8((r2 / sum) * 255)
-		b := uint8((r3 / sum) * 255)
-
-		data[row[0]] = RGBA{r, g, b, 255}
-	}
-
-	return data
 }
 
 func (p *Purple) GetSubregionColor(subregion string) RGBA {
