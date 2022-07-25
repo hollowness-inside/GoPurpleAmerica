@@ -106,7 +106,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		f, _ := zipFile.Open()
 		defer f.Close()
 
-		p.statistics = ReadStatistics(f)
+		p.stats = ReadStatistics(f)
 	}
 
 	if r.ColorTablePath != "" && r.DataPath != "" {
@@ -148,8 +148,6 @@ func (r *Raw) Evaluate() (*Purple, error) {
 
 			colors[i] = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 		}
-
-		p.statistics.colors = colors
 	}
 
 	p.outputPath = r.OutputPath

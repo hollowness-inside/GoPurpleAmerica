@@ -1,8 +1,12 @@
 package purple
 
 import (
+	"bufio"
 	"fmt"
 	"image/color"
+	"io"
+	"strconv"
+	"strings"
 
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
@@ -14,8 +18,9 @@ type Purple struct {
 	strokeWidth float64
 	strokeColor color.RGBA
 
-	statistics *Statistics
-	region     *Region
+	region *Region
+
+	stats map[string]color.RGBA
 
 	scale      float64
 	outputPath string
@@ -52,7 +57,7 @@ func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
 	gc.SetLineWidth(p.strokeWidth)
 
 	for _, subc := range region.Subregions {
-		gc.SetFillColor(p.getSubregionColor())
+		gc.SetFillColor(p.GetSubregionColor(subc.Name))
 		gc.BeginPath()
 
 		start := subc.Points[0]
@@ -72,6 +77,47 @@ func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
 	}
 }
 
-func (p *Purple) getSubregionColor() color.RGBA {
+func ReadStatistics(r io.Reader) map[string]color.RGBA {
+	data := make(map[string]color.RGBA, 0)
+
+	reader := bufio.NewScanner(r)
+
+	// Skipping the header
+	reader.Scan()
+
+	for reader.Scan() {
+		row := strings.Split(reader.Text(), ",")
+
+		r1, err := strconv.ParseFloat(row[1], 64)
+		if err != nil {
+			return nil
+		}
+
+		r2, err := strconv.ParseFloat(row[2], 64)
+		if err != nil {
+			return nil
+		}
+
+		r3, err := strconv.ParseFloat(row[3], 64)
+		if err != nil {
+			return nil
+		}
+
+		sum := r1 + r2 + r3
+
+		r := uint8((r1 / sum) * 255)
+		g := uint8((r2 / sum) * 255)
+		b := uint8((r3 / sum) * 255)
+
+		data[row[0]] = color.RGBA{r, g, b, 255}
+	}
+
+	return data
+}
+
+func (p *Purple) GetSubregionColor(subregion string) color.RGBA {
+	if v, ok := p.stats[subregion]; ok {
+		return v
+	}
 	return color.RGBA{0, 0, 0, 255}
 }
