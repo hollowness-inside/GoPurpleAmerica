@@ -12,48 +12,45 @@ import (
 )
 
 type Purple struct {
-	regionName string
-	year       string
+	Region *State
+	Year   string
 
-	strokeWidth float64
-	strokeColor color.RGBA
+	Stats      map[string]color.RGBA
+	OutputPath string
 
-	region *State
-	stats  map[string]color.RGBA
-
-	scale      float64
-	outputPath string
+	Scale       float64
+	StrokeWidth float64
+	StrokeColor color.RGBA
 }
 
-func (p *Purple) UseDefault() {
-	p.regionName = "USA"
-	p.scale = 10
-	p.strokeWidth = 0.2
-	p.strokeColor = color.RGBA{0, 0, 0, 255}
+func (p *Purple) UseDefaults() {
+	p.Scale = 10
+	p.StrokeWidth = 0.2
+	p.StrokeColor = color.RGBA{0, 0, 0, 255}
 }
 
 func (p *Purple) Draw() {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
 
-	width := p.region.Bbox.Max.X - p.region.Bbox.Min.X
-	height := p.region.Bbox.Max.Y - p.region.Bbox.Min.Y
+	width := p.Region.Bbox.Max.X - p.Region.Bbox.Min.X
+	height := p.Region.Bbox.Max.Y - p.Region.Bbox.Min.Y
 
-	svg.Width = fmt.Sprintf("%fpx", width*p.scale)
-	svg.Height = fmt.Sprintf("%fpx", height*p.scale)
+	svg.Width = fmt.Sprintf("%fpx", width*p.Scale)
+	svg.Height = fmt.Sprintf("%fpx", height*p.Scale)
 
-	gc.Scale(p.scale, p.scale)
-	p.drawRegion(p.region, gc)
+	gc.Scale(p.Scale, p.Scale)
+	p.drawRegion(p.Region, gc)
 
-	draw2dsvg.SaveToSvgFile(p.outputPath, svg)
+	draw2dsvg.SaveToSvgFile(p.OutputPath, svg)
 }
 
 func (p *Purple) drawRegion(region *State, gc *draw2dsvg.GraphicContext) {
 	minX := region.Bbox.Min.Y
 	maxY := region.Bbox.Max.Y
 
-	gc.SetStrokeColor(p.strokeColor)
-	gc.SetLineWidth(p.strokeWidth)
+	gc.SetStrokeColor(p.StrokeColor)
+	gc.SetLineWidth(p.StrokeWidth)
 
 	for _, subc := range region.Counties {
 		gc.SetFillColor(p.GetSubregionColor(subc.Name))
@@ -115,7 +112,7 @@ func ReadStatistics(r io.Reader) map[string]color.RGBA {
 }
 
 func (p *Purple) GetSubregionColor(subregion string) color.RGBA {
-	if v, ok := p.stats[subregion]; ok {
+	if v, ok := p.Stats[subregion]; ok {
 		return v
 	}
 	return color.RGBA{0, 0, 0, 0}

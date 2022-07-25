@@ -35,7 +35,7 @@ func main() {
 		switch os.Args[i] {
 		case "-r", "--region":
 			i++
-			pRaw.Region = os.Args[i]
+			pRaw.RegionName = os.Args[i]
 		case "-rd", "--regions-data":
 			i++
 			pRaw.RegionsPath = os.Args[i]
@@ -50,7 +50,7 @@ func main() {
 			pRaw.Year = os.Args[i]
 		case "-n", "--colors":
 			i++
-			pRaw.ColorTablePath = os.Args[i]
+			pRaw.ColorsPath = os.Args[i]
 		case "-N":
 			i++
 			createColorTable(os.Args[i])

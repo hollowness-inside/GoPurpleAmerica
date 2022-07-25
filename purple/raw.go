@@ -10,25 +10,28 @@ import (
 )
 
 type Raw struct {
-	Region         string
-	RegionsPath    string
-	DataPath       string
-	Year           string
-	ColorTablePath string
-	OutputPath     string
+	RegionName  string
+	RegionsPath string
+	DataPath    string
+	Year        string
+	ColorsPath  string
+	OutputPath  string
 
+	Scale       string
 	StrokeWidth string
 	StrokeColor string
-	Scale       string
+}
+
+func (r *Raw) UseDefaults() {
+	r.RegionName = "USA"
+	r.Scale = "10"
+	r.StrokeColor = "0,0,0,255"
+	r.StrokeWidth = "0.01"
 }
 
 func (r *Raw) Evaluate() (*Purple, error) {
 	p := new(Purple)
-	p.UseDefault()
-
-	if r.Region != "" {
-		p.regionName = r.Region
-	}
+	p.UseDefaults()
 
 	if r.RegionsPath != "" {
 		reader, err := zip.OpenReader(r.RegionsPath)
@@ -39,7 +42,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 
 		var zipFile *zip.File
 		for _, f := range reader.File {
-			if f.Name == p.regionName+".txt" {
+			if f.Name == r.RegionName+".txt" {
 				zipFile = f
 			}
 		}
@@ -47,17 +50,17 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		f, _ := zipFile.Open()
 		defer f.Close()
 
-		p.region = ReadRegion(f)
+		p.Region = ReadRegion(f)
 	}
 
-	p.year = r.Year
+	p.Year = r.Year
 
 	if r.StrokeWidth != "" {
 		v, err := strconv.ParseFloat(r.StrokeWidth, 64)
 		if err != nil {
 			return nil, err
 		}
-		p.strokeWidth = v
+		p.StrokeWidth = v
 	}
 
 	if r.StrokeColor != "" {
@@ -82,7 +85,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 			return nil, err
 		}
 
-		p.strokeColor = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+		p.StrokeColor = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
 	if r.DataPath != "" {
@@ -94,7 +97,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 
 		var zipFile *zip.File
 		for _, f := range reader.File {
-			if f.Name == p.regionName+p.year+".txt" {
+			if f.Name == r.RegionName+p.Year+".txt" {
 				zipFile = f
 			}
 		}
@@ -106,11 +109,11 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		f, _ := zipFile.Open()
 		defer f.Close()
 
-		p.stats = ReadStatistics(f)
+		p.Stats = ReadStatistics(f)
 	}
 
-	if r.ColorTablePath != "" && r.DataPath != "" {
-		f, err := os.Open(r.ColorTablePath)
+	if r.ColorsPath != "" && r.DataPath != "" {
+		f, err := os.Open(r.ColorsPath)
 		if err != nil {
 			return nil, err
 		}
@@ -150,7 +153,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		}
 	}
 
-	p.outputPath = r.OutputPath
+	p.OutputPath = r.OutputPath
 
 	if r.Scale != "" {
 		v, err := strconv.ParseFloat(r.Scale, 64)
@@ -158,7 +161,7 @@ func (r *Raw) Evaluate() (*Purple, error) {
 			return nil, err
 		}
 
-		p.scale = v
+		p.Scale = v
 	}
 
 	return p, nil
