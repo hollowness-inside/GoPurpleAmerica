@@ -8,6 +8,11 @@ import (
 	"github.com/MrPythoneer/nifty/purple/purple"
 )
 
+// TODO: County abbreviation or full name
+// TODO: Election results by county
+// TODO: Election results by several counties
+// TODO: Use different data sets
+
 const HelpMsg = `Usage: purple [options] -r regions.zip -o output.svg
 Options:
 	-r/--region REGION_NAME		Selects region to draw (USA by default)
@@ -23,10 +28,6 @@ Options:
 	-sc/--stroke-color R,G,B,A	Sets stroke color`
 
 func main() {
-	// TODO: County abbreviation or full name
-	// TODO: Election results by county
-	// TODO: Election results by several counties
-	// TODO: Use different data sets
 	pRaw := purple.Raw{}
 
 	i := 1
