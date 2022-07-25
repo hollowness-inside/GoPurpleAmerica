@@ -18,7 +18,7 @@ type Purple struct {
 	strokeWidth float64
 	strokeColor color.RGBA
 
-	region *Region
+	region *State
 	stats  map[string]color.RGBA
 
 	scale      float64
@@ -48,14 +48,14 @@ func (p *Purple) Draw() {
 	draw2dsvg.SaveToSvgFile(p.outputPath, svg)
 }
 
-func (p *Purple) drawRegion(region *Region, gc *draw2dsvg.GraphicContext) {
+func (p *Purple) drawRegion(region *State, gc *draw2dsvg.GraphicContext) {
 	minX := region.Bbox.Min.Y
 	maxY := region.Bbox.Max.Y
 
 	gc.SetStrokeColor(p.strokeColor)
 	gc.SetLineWidth(p.strokeWidth)
 
-	for _, subc := range region.Subregions {
+	for _, subc := range region.Counties {
 		gc.SetFillColor(p.GetSubregionColor(subc.Name))
 		gc.BeginPath()
 

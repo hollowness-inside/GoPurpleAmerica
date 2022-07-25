@@ -24,11 +24,12 @@ func NewBBox(p1, p2 Point) BBox {
 	if x1 < x2 {
 		x1, x2 = x2, x1
 	}
-	maxX, minX := x1, x2
 
 	if y1 < y2 {
 		y1, y2 = y2, y1
 	}
+
+	maxX, minX := x1, x2
 	maxY, minY := y1, y2
 
 	bbox.Max = Point{maxX, maxY}

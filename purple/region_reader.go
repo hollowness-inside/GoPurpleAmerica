@@ -11,7 +11,7 @@ type regionReader struct {
 	bufio.Scanner
 }
 
-func ReadRegion(r io.Reader) *Region {
+func ReadRegion(r io.Reader) *State {
 	sc := newRegionReader(r)
 	return sc.scanRegion()
 }
@@ -49,13 +49,13 @@ func (sc *regionReader) scanString() string {
 	return sc.Text()
 }
 
-func (sc *regionReader) scanRegion() *Region {
-	reg := new(Region)
+func (sc *regionReader) scanRegion() *State {
+	reg := new(State)
 	reg.Bbox = sc.scanBBox()
-	reg.SubregionsN = sc.scanInt()
+	reg.CountiesN = sc.scanInt()
 
-	reg.Subregions = make([]Subregion, reg.SubregionsN)
-	for i := 0; i < reg.SubregionsN; i++ {
+	reg.Counties = make([]County, reg.CountiesN)
+	for i := 0; i < reg.CountiesN; i++ {
 		sc.Scan()
 
 		name := sc.scanString()
@@ -67,7 +67,7 @@ func (sc *regionReader) scanRegion() *Region {
 			points[j] = sc.scanPoint()
 		}
 
-		reg.Subregions[i] = Subregion{
+		reg.Counties[i] = County{
 			name,
 			regionName,
 			n,
