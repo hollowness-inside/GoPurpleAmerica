@@ -38,12 +38,12 @@ func (p *Purple) Draw() {
 	svg.Height = fmt.Sprintf("%fpx", height*p.Scale)
 
 	gc.Scale(p.Scale, p.Scale)
-	p.drawState(p.State, gc)
+	p.drawState(gc)
 
 	draw2dsvg.SaveToSvgFile(p.OutputPath, svg)
 }
 
-func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
+func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
@@ -53,13 +53,13 @@ func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
 		gc.BeginPath()
 
 		start := county.Points[0]
-		xs := start.X - state.Bbox.Min.X
-		ys := state.Bbox.Max.Y - start.Y
+		xs := start.X - p.State.Bbox.Min.X
+		ys := p.State.Bbox.Max.Y - start.Y
 		gc.MoveTo(xs, ys)
 
 		for _, point := range county.Points {
-			x := point.X - state.Bbox.Min.X
-			y := state.Bbox.Max.Y - point.Y
+			x := point.X - p.State.Bbox.Min.X
+			y := p.State.Bbox.Max.Y - point.Y
 			gc.LineTo(x, y)
 		}
 
