@@ -3,6 +3,7 @@ package purple
 import (
 	"archive/zip"
 	"bufio"
+	"image/color"
 	"os"
 	"strconv"
 	"strings"
@@ -36,6 +37,47 @@ func (r *Raw) Evaluate() (*Purple, error) {
 		p.dataArchive = reader
 	}
 
+	if r.Year != "" {
+		year, err := strconv.Atoi(r.Year)
+		if err != nil {
+			return nil, err
+		}
+		p.year = year
+	}
+
+	if r.StrokeWidth != "" {
+		v, err := strconv.ParseFloat(r.StrokeWidth, 64)
+		if err != nil {
+			return nil, err
+		}
+		p.strokeWidth = v
+	}
+
+	if r.StrokeColor != "" {
+		split := strings.Split(r.StrokeColor, ",")
+		r, err := strconv.Atoi(split[0])
+		if err != nil {
+			return nil, err
+		}
+
+		g, err := strconv.Atoi(split[1])
+		if err != nil {
+			return nil, err
+		}
+
+		b, err := strconv.Atoi(split[2])
+		if err != nil {
+			return nil, err
+		}
+
+		a, err := strconv.Atoi(split[3])
+		if err != nil {
+			return nil, err
+		}
+
+		p.strokeColor = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+	}
+
 	{
 		var reader *zip.ReadCloser
 		var err error
@@ -50,14 +92,6 @@ func (r *Raw) Evaluate() (*Purple, error) {
 			return nil, err
 		}
 		p.regionsArchive = reader
-	}
-
-	if r.Year != "" {
-		year, err := strconv.Atoi(r.Year)
-		if err != nil {
-			return nil, err
-		}
-		p.year = year
 	}
 
 	if r.ColorTablePath != "" {

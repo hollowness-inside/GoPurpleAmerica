@@ -55,6 +55,12 @@ func main() {
 		case "--nct", "--new-color-table":
 			createColorTable(os.Args[i])
 			return
+		case "--sw", "--stroke-width":
+			i++
+			pRaw.StrokeWidth = os.Args[i]
+		case "--sc", "--stroke-color":
+			i++
+			pRaw.StrokeColor = os.Args[i]
 		}
 
 		i++
