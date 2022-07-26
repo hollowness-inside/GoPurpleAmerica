@@ -3,6 +3,7 @@ package purple
 import (
 	"fmt"
 	"image/color"
+	"sync"
 
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
@@ -38,32 +39,30 @@ func (p *Purple) Draw() {
 	svg.Height = fmt.Sprintf("%fpx", height*p.Scale)
 
 	gc.Scale(p.Scale, p.Scale)
-	p.drawState(p.State, gc)
+	p.drawState(gc)
 
 	draw2dsvg.SaveToSvgFile(p.OutputPath, svg)
 }
 
-func (p *Purple) drawState(state *State, gc *draw2dsvg.GraphicContext) {
+func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
-	for _, county := range state.Counties {
+	counties := p.projectCounties()
+
+	for _, county := range counties {
 		clr := p.getCountyColor(county.Name)
 		gc.SetFillColor(clr)
 		gc.BeginPath()
 
 		start := county.Points[0]
-		xs := start.X - state.Bbox.Min.X
-		ys := state.Bbox.Max.Y - start.Y
-		gc.MoveTo(xs, ys)
 
+		gc.MoveTo(start.X, start.Y)
 		for _, point := range county.Points {
-			x := point.X - state.Bbox.Min.X
-			y := state.Bbox.Max.Y - point.Y
-			gc.LineTo(x, y)
+			gc.LineTo(point.X, point.Y)
 		}
+		gc.LineTo(start.X, start.Y)
 
-		gc.LineTo(xs, ys)
 		gc.Close()
 		gc.FillStroke()
 		gc.Fill(gc.Current.Path)
@@ -75,4 +74,46 @@ func (p *Purple) getCountyColor(county string) RGBA {
 		return v
 	}
 	return RGBA{0, 0, 0, 0}
+}
+
+func (p *Purple) projectCounties() []County {
+	countiesCh := make(chan County)
+
+	wg := &sync.WaitGroup{}
+
+	for _, county := range p.State.Counties {
+		wg.Add(1)
+		go func(county County) {
+			newCounty := County{}
+
+			points := make([]Point, county.PointsN)
+			for i, point := range county.Points {
+				x := point.X - p.State.Bbox.Min.X
+				y := p.State.Bbox.Max.Y - point.Y
+				points[i] = Point{x, y}
+			}
+
+			newCounty.Name = county.Name
+			newCounty.PointsN = county.PointsN
+			newCounty.Points = points
+
+			countiesCh <- newCounty
+			wg.Done()
+		}(county)
+	}
+
+	go func() {
+		wg.Wait()
+		close(countiesCh)
+	}()
+
+	counties := make([]County, p.State.CountiesN)
+
+	i := 0
+	for c := range countiesCh {
+		counties[i] = c
+		i++
+	}
+
+	return counties
 }
