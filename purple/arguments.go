@@ -41,7 +41,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 	p.Year = args.Year
 
 	if args.StatsPath != "" {
-		stats, err := zipOpen(args.StatesPath, args.StateName, ReadStatistics)
+		stats, err := zipOpen(args.StatsPath, args.StateName, ReadStatistics)
 		if err != nil {
 			return nil, err
 		}
