@@ -23,7 +23,7 @@ type Purple struct {
 
 func (p *Purple) UseDefaults() {
 	p.Scale = 10
-	p.StrokeWidth = 0.2
+	p.StrokeWidth = 0.05
 	p.StrokeColor = RGBA{0, 0, 0, 255}
 }
 
