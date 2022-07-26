@@ -30,7 +30,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 	p.UseDefaults()
 
 	if args.StatesPath != "" {
-		state, err := zipOpen(args.StatesPath, args.StateName, ReadState)
+		state, err := zipRead(args.StatesPath, args.StateName, ReadState)
 		if err != nil {
 			return nil, err
 		}
@@ -41,7 +41,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 	p.Year = args.Year
 
 	if args.StatsPath != "" {
-		stats, err := zipOpen(args.StatsPath, args.StateName, ReadStatistics)
+		stats, err := zipRead(args.StatsPath, args.StateName, ReadStatistics)
 		if err != nil {
 			return nil, err
 		}
@@ -142,7 +142,7 @@ func ReadStatistics(r io.Reader) any {
 	return data
 }
 
-func zipOpen(filepath, name string, read func(r io.Reader) any) (any, error) {
+func zipRead(filepath, name string, read func(r io.Reader) any) (any, error) {
 	reader, err := zip.OpenReader(filepath)
 	if err != nil {
 		return nil, err
