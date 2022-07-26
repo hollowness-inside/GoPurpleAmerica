@@ -114,15 +114,3 @@ func (p *Purple) projectCounties() chan *ChanCounty {
 
 	return counties
 }
-
-// path := draw2d.Path{}
-// path.Components = make([]draw2d.PathCmp, county.PointsN)
-// path.Points = make([]float64, county.PointsN*2)
-
-// for i, v := range county.Points {
-// 	path.Components[i] = draw2d.LineToCmp
-// 	path.Points[2*i] = v.X
-// 	path.Points[2*i+1] = v.Y
-// }
-
-// path.Components[0] = draw2d.MoveToCmp
