@@ -79,7 +79,6 @@ func (p *Purple) projectCounties() chan *ChanCounty {
 	for _, county := range p.State.Counties {
 		wg.Add(1)
 		go func(county County) {
-			newCounty := ChanCounty{}
 			path := new(draw2d.Path)
 			path.Components = make([]draw2d.PathCmp, county.PointsN+1)
 			path.Points = make([]float64, 2*county.PointsN+2)
@@ -94,11 +93,11 @@ func (p *Purple) projectCounties() chan *ChanCounty {
 			}
 
 			path.Components[0] = draw2d.MoveToCmp
-
 			path.Components[county.PointsN] = draw2d.LineToCmp
 			path.Points[2*county.PointsN] = path.Points[0]
 			path.Points[2*county.PointsN+1] = path.Points[1]
 
+			newCounty := ChanCounty{}
 			newCounty.Name = county.Name
 			newCounty.Path = path
 
