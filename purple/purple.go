@@ -50,7 +50,7 @@ func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
 
 	counties := p.projectCounties()
 
-	for _, county := range counties {
+	for county := range counties {
 		clr := p.getCountyColor(county.Name)
 		gc.SetFillColor(clr)
 		gc.BeginPath()
@@ -76,8 +76,8 @@ func (p *Purple) getCountyColor(county string) RGBA {
 	return RGBA{0, 0, 0, 0}
 }
 
-func (p *Purple) projectCounties() []County {
-	countiesCh := make(chan County)
+func (p *Purple) projectCounties() chan County {
+	counties := make(chan County)
 
 	wg := &sync.WaitGroup{}
 
@@ -97,23 +97,15 @@ func (p *Purple) projectCounties() []County {
 			newCounty.PointsN = county.PointsN
 			newCounty.Points = points
 
-			countiesCh <- newCounty
+			counties <- newCounty
 			wg.Done()
 		}(county)
 	}
 
 	go func() {
 		wg.Wait()
-		close(countiesCh)
+		close(counties)
 	}()
-
-	counties := make([]County, p.State.CountiesN)
-
-	i := 0
-	for c := range countiesCh {
-		counties[i] = c
-		i++
-	}
 
 	return counties
 }
