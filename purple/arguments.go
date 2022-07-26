@@ -3,14 +3,21 @@ package purple
 import (
 	"archive/zip"
 	"bufio"
-	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 )
 
-var ErrStateName = errors.New("unknown state name")
+type ErrZipFile struct {
+	arch  string
+	fname string
+}
+
+func (e *ErrZipFile) Error() string {
+	return fmt.Sprintf("cannot find '%s' in '%s'", e.fname, e.arch)
+}
 
 type Arguments struct {
 	StateName  string
@@ -41,7 +48,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 	p.Year = args.Year
 
 	if args.StatsPath != "" {
-		stats, err := zipRead(args.StatsPath, args.StateName, ReadStatistics)
+		stats, err := zipRead(args.StatsPath, args.StateName+args.Year, ReadStatistics)
 		if err != nil {
 			return nil, err
 		}
@@ -152,11 +159,14 @@ func zipRead(filepath, name string, read func(r io.Reader) any) (any, error) {
 
 	var zipFile *zip.File
 	for _, v := range reader.File {
-		if v.Name == name+".txt" {
 		if v.Name == name {
 			zipFile = v
 			break
 		}
+	}
+
+	if zipFile == nil {
+		return nil, &ErrZipFile{filepath, name}
 	}
 
 	f, err := zipFile.Open()
