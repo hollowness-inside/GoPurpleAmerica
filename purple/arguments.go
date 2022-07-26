@@ -143,6 +143,7 @@ func ReadStatistics(r io.Reader) any {
 }
 
 func zipRead(filepath, name string, read func(r io.Reader) any) (any, error) {
+	name = name + ".txt"
 	reader, err := zip.OpenReader(filepath)
 	if err != nil {
 		return nil, err
@@ -152,7 +153,9 @@ func zipRead(filepath, name string, read func(r io.Reader) any) (any, error) {
 	var zipFile *zip.File
 	for _, v := range reader.File {
 		if v.Name == name+".txt" {
+		if v.Name == name {
 			zipFile = v
+			break
 		}
 	}
 
