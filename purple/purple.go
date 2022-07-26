@@ -23,6 +23,11 @@ type Purple struct {
 	StrokeColor RGBA
 }
 
+type ChanCounty struct {
+	Name string
+	Path *draw2d.Path
+}
+
 func (p *Purple) UseDefaults() {
 	p.Scale = 10
 	p.StrokeWidth = 0.05
@@ -54,24 +59,8 @@ func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
 	for county := range counties {
 		clr := p.getCountyColor(county.Name)
 		gc.SetFillColor(clr)
-
-		path := draw2d.Path{}
-		path.Components = make([]draw2d.PathCmp, county.PointsN)
-		path.Points = make([]float64, county.PointsN*2)
-
-		for i, v := range county.Points {
-			path.Components[i] = draw2d.LineToCmp
-			path.Points[2*i] = v.X
-			path.Points[2*i+1] = v.Y
-		}
-
-		path.Components[0] = draw2d.MoveToCmp
-
-		gc.Stroke(&path)
-
-		gc.Close()
-		gc.FillStroke()
-		gc.Fill(gc.Current.Path)
+		gc.Fill(county.Path)
+		gc.Stroke(county.Path)
 	}
 }
 
@@ -82,28 +71,38 @@ func (p *Purple) getCountyColor(county string) RGBA {
 	return RGBA{0, 0, 0, 0}
 }
 
-func (p *Purple) projectCounties() chan County {
-	counties := make(chan County)
+func (p *Purple) projectCounties() chan *ChanCounty {
+	counties := make(chan *ChanCounty)
 
 	wg := &sync.WaitGroup{}
 
 	for _, county := range p.State.Counties {
 		wg.Add(1)
 		go func(county County) {
-			newCounty := County{}
+			newCounty := ChanCounty{}
+			path := new(draw2d.Path)
+			path.Components = make([]draw2d.PathCmp, county.PointsN+1)
+			path.Points = make([]float64, 2*county.PointsN+2)
 
-			points := make([]Point, county.PointsN)
 			for i, point := range county.Points {
 				x := point.X - p.State.Bbox.Min.X
 				y := p.State.Bbox.Max.Y - point.Y
-				points[i] = Point{x, y}
+
+				path.Components[i] = draw2d.LineToCmp
+				path.Points[i*2] = x
+				path.Points[i*2+1] = y
 			}
 
-			newCounty.Name = county.Name
-			newCounty.PointsN = county.PointsN
-			newCounty.Points = points
+			path.Components[0] = draw2d.MoveToCmp
 
-			counties <- newCounty
+			path.Components[county.PointsN] = draw2d.LineToCmp
+			path.Points[2*county.PointsN] = path.Points[0]
+			path.Points[2*county.PointsN+1] = path.Points[1]
+
+			newCounty.Name = county.Name
+			newCounty.Path = path
+
+			counties <- &newCounty
 			wg.Done()
 		}(county)
 	}
@@ -115,3 +114,15 @@ func (p *Purple) projectCounties() chan County {
 
 	return counties
 }
+
+// path := draw2d.Path{}
+// path.Components = make([]draw2d.PathCmp, county.PointsN)
+// path.Points = make([]float64, county.PointsN*2)
+
+// for i, v := range county.Points {
+// 	path.Components[i] = draw2d.LineToCmp
+// 	path.Points[2*i] = v.X
+// 	path.Points[2*i+1] = v.Y
+// }
+
+// path.Components[0] = draw2d.MoveToCmp
