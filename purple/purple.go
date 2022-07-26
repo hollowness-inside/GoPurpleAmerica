@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"sync"
 
+	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
 
@@ -53,15 +54,20 @@ func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
 	for county := range counties {
 		clr := p.getCountyColor(county.Name)
 		gc.SetFillColor(clr)
-		gc.BeginPath()
 
-		start := county.Points[0]
+		path := draw2d.Path{}
+		path.Components = make([]draw2d.PathCmp, county.PointsN)
+		path.Points = make([]float64, county.PointsN*2)
 
-		gc.MoveTo(start.X, start.Y)
-		for _, point := range county.Points {
-			gc.LineTo(point.X, point.Y)
+		for i, v := range county.Points {
+			path.Components[i] = draw2d.LineToCmp
+			path.Points[2*i] = v.X
+			path.Points[2*i+1] = v.Y
 		}
-		gc.LineTo(start.X, start.Y)
+
+		path.Components[0] = draw2d.MoveToCmp
+
+		gc.Stroke(&path)
 
 		gc.Close()
 		gc.FillStroke()
