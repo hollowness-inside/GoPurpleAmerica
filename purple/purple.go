@@ -72,44 +72,45 @@ func (p *Purple) getCountyColor(county string) RGBA {
 }
 
 func (p *Purple) projectCounties() chan *ChanCounty {
-	counties := make(chan *ChanCounty)
+	counties := make(chan *ChanCounty, p.State.CountiesN)
 
-	wg := &sync.WaitGroup{}
+	wg := new(sync.WaitGroup)
+	wg.Add(p.State.CountiesN)
 
 	for _, county := range p.State.Counties {
-		wg.Add(1)
-		go func(county County) {
-			path := new(draw2d.Path)
-			path.Components = make([]draw2d.PathCmp, county.PointsN+1)
-			path.Points = make([]float64, 2*county.PointsN+2)
-
-			for i, point := range county.Points {
-				x := point.X - p.State.Bbox.Min.X
-				y := p.State.Bbox.Max.Y - point.Y
-
-				path.Components[i] = draw2d.LineToCmp
-				path.Points[i*2] = x
-				path.Points[i*2+1] = y
-			}
-
-			path.Components[0] = draw2d.MoveToCmp
-			path.Components[county.PointsN] = draw2d.LineToCmp
-			path.Points[2*county.PointsN] = path.Points[0]
-			path.Points[2*county.PointsN+1] = path.Points[1]
-
-			newCounty := ChanCounty{}
-			newCounty.Name = county.Name
-			newCounty.Path = path
-
-			counties <- &newCounty
-			wg.Done()
-		}(county)
+		go p.projectCounty(wg, county, counties)
 	}
 
-	go func() {
-		wg.Wait()
-		close(counties)
-	}()
+	wg.Wait()
+	close(counties)
 
 	return counties
+}
+
+func (p *Purple) projectCounty(wg *sync.WaitGroup, county County, counties chan *ChanCounty) {
+	path := new(draw2d.Path)
+	path.Components = make([]draw2d.PathCmp, county.PointsN+1)
+	path.Points = make([]float64, 2*county.PointsN+2)
+
+	for i, point := range county.Points {
+		x := point.X - p.State.Bbox.Min.X
+		y := p.State.Bbox.Max.Y - point.Y
+
+		path.Components[i] = draw2d.LineToCmp
+		path.Points[i*2] = x
+		path.Points[i*2+1] = y
+	}
+
+	path.Components[0] = draw2d.MoveToCmp
+	path.Components[county.PointsN] = draw2d.LineToCmp
+	path.Points[2*county.PointsN] = path.Points[0]
+	path.Points[2*county.PointsN+1] = path.Points[1]
+
+	newCounty := ChanCounty{}
+	newCounty.Name = county.Name
+	newCounty.Path = path
+
+	counties <- &newCounty
+
+	wg.Done()
 }
