@@ -1,5 +1,7 @@
 package purple
 
+import "github.com/llgcode/draw2d"
+
 type State struct {
 	Bbox      BBox
 	Name      string
@@ -12,4 +14,9 @@ type County struct {
 	StateName string
 	PointsN   int
 	Points    []Point
+}
+
+type ChanCounty struct {
+	Name string
+	Path *draw2d.Path
 }

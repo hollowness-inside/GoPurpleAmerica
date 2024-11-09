@@ -14,10 +14,6 @@ type BBox struct {
 }
 
 func NewBBox(p1, p2 Point) BBox {
-	bbox := BBox{}
-	bbox.Point1 = p1
-	bbox.Point2 = p2
-
 	x1, y1 := p1.X, p1.Y
 	x2, y2 := p2.X, p2.Y
 
@@ -32,8 +28,10 @@ func NewBBox(p1, p2 Point) BBox {
 	maxX, minX := x1, x2
 	maxY, minY := y1, y2
 
-	bbox.Max = Point{maxX, maxY}
-	bbox.Min = Point{minX, minY}
-
-	return bbox
+	return BBox{
+		Point1: p1,
+		Point2: p2,
+		Max:    Point{maxX, maxY},
+		Min:    Point{minX, minY},
+	}
 }

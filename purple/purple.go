@@ -22,11 +22,6 @@ type Purple struct {
 	StrokeColor RGBA
 }
 
-type ChanCounty struct {
-	Name string
-	Path *draw2d.Path
-}
-
 func (p *Purple) GenerateSVG() *draw2dsvg.Svg {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
@@ -38,20 +33,20 @@ func (p *Purple) GenerateSVG() *draw2dsvg.Svg {
 	svg.Height = fmt.Sprintf("%fpx", height*p.Scale)
 
 	gc.Scale(p.Scale, p.Scale)
-	p.drawState(gc)
+	p.draw(gc)
 
 	return svg
 }
 
-func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
+func (p *Purple) draw(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
 	counties := p.projectCounties()
 
 	for county := range counties {
-		clr := p.getCountyColor(county.Name)
-		gc.SetFillColor(clr)
+		countyColor := p.getCountyColor(county.Name)
+		gc.SetFillColor(countyColor)
 		gc.Fill(county.Path)
 		gc.Stroke(county.Path)
 	}
@@ -71,17 +66,16 @@ func (p *Purple) projectCounties() chan *ChanCounty {
 	wg.Add(p.State.CountiesN)
 
 	for _, county := range p.State.Counties {
-		go p.projectCounty(wg, county, counties)
+		go p.outlineCounty(wg, county, counties)
 	}
 
 	wg.Wait()
 
 	close(counties)
-
 	return counties
 }
 
-func (p *Purple) projectCounty(wg *sync.WaitGroup, county County, counties chan *ChanCounty) {
+func (p *Purple) outlineCounty(wg *sync.WaitGroup, county County, counties chan *ChanCounty) {
 	path := new(draw2d.Path)
 	path.Components = make([]draw2d.PathCmp, county.PointsN+1)
 	path.Points = make([]float64, 2*county.PointsN+2)
@@ -103,7 +97,6 @@ func (p *Purple) projectCounty(wg *sync.WaitGroup, county County, counties chan 
 	newCounty := ChanCounty{}
 	newCounty.Name = county.Name
 	newCounty.Path = path
-
 	counties <- &newCounty
 
 	wg.Done()
