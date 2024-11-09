@@ -1,4 +1,4 @@
-package purple
+package main
 
 import (
 	"archive/zip"
@@ -8,16 +8,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/MrPythoneer/nifty/purple/purple"
 )
-
-type ErrZipFile struct {
-	arch  string
-	fname string
-}
-
-func (e *ErrZipFile) Error() string {
-	return fmt.Sprintf("cannot find '%s' in '%s'", e.fname, e.arch)
-}
 
 type Arguments struct {
 	StateName  string
@@ -32,17 +25,17 @@ type Arguments struct {
 	StrokeColor string
 }
 
-func (args *Arguments) Evaluate() (*Purple, error) {
-	p := new(Purple)
+func (args *Arguments) Evaluate() (*purple.Purple, error) {
+	p := new(purple.Purple)
 	p.UseDefaults()
 
 	if args.StatesPath != "" {
-		state, err := zipRead(args.StatesPath, args.StateName, ReadState)
+		state, err := zipRead(args.StatesPath, args.StateName, purple.ReadState)
 		if err != nil {
 			return nil, err
 		}
 
-		p.State = state.(*State)
+		p.State = state.(*purple.State)
 	}
 
 	p.Year = args.Year
@@ -53,7 +46,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 			return nil, err
 		}
 
-		p.Stats = stats.(map[string]RGBA)
+		p.Stats = stats.(map[string]purple.RGBA)
 	}
 
 	if args.ColorsPath != "" && args.StatsPath != "" {
@@ -65,7 +58,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 
 		sc := bufio.NewScanner(f)
 
-		colors := [3]RGBA{}
+		colors := [3]purple.RGBA{}
 		for i := 0; i < 3; i++ {
 			if !(sc.Scan() && sc.Err() == nil) {
 				return nil, sc.Err()
@@ -112,7 +105,7 @@ func (args *Arguments) Evaluate() (*Purple, error) {
 }
 
 func ReadStatistics(r io.Reader) any {
-	data := make(map[string]RGBA, 0)
+	data := make(map[string]purple.RGBA, 0)
 
 	reader := bufio.NewScanner(r)
 
@@ -143,7 +136,7 @@ func ReadStatistics(r io.Reader) any {
 		g := uint8((r2 / sum) * 255)
 		b := uint8((r3 / sum) * 255)
 
-		data[row[0]] = RGBA{r, g, b, 255}
+		data[row[0]] = purple.RGBA{r, g, b, 255}
 	}
 
 	return data
@@ -166,7 +159,7 @@ func zipRead(filepath, name string, read func(r io.Reader) any) (any, error) {
 	}
 
 	if zipFile == nil {
-		return nil, &ErrZipFile{filepath, name}
+		return nil, fmt.Errorf("cannot find '%s' in '%s'", name, filepath)
 	}
 
 	f, err := zipFile.Open()
@@ -192,11 +185,11 @@ func AtoiMany(many ...string) ([]int, error) {
 	return res, nil
 }
 
-func ParseRGBA(text string) (RGBA, error) {
+func ParseRGBA(text string) (purple.RGBA, error) {
 	split := strings.Split(text, ",")
 	rgba, err := AtoiMany(split...)
 	if err != nil {
-		return RGBA{}, err
+		return purple.RGBA{}, err
 	}
 
 	r := uint8(rgba[0])
@@ -204,5 +197,5 @@ func ParseRGBA(text string) (RGBA, error) {
 	b := uint8(rgba[2])
 	a := uint8(rgba[3])
 
-	return RGBA{r, g, b, a}, nil
+	return purple.RGBA{r, g, b, a}, nil
 }

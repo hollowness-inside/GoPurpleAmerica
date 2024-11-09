@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/MrPythoneer/nifty/purple/purple"
 )
 
 // TODO: County abbreviation or full name
@@ -28,7 +26,7 @@ Options:
 	-sc/--stroke-color R,G,B,A	Sets stroke color`
 
 func main() {
-	args := purple.Arguments{}
+	args := Arguments{}
 
 	i := 1
 	for i < len(os.Args) {
@@ -68,23 +66,24 @@ func main() {
 		i++
 	}
 
-	if args.StatesPath == "" {
-		fmt.Println("Please provide regions data archive")
-		fmt.Println(HelpMsg)
-		return
-	}
+	// if args.StatesPath == "" {
+	// 	fmt.Println("Please provide regions data archive")
+	// 	fmt.Println(HelpMsg)
+	// 	return
+	// }
 
-	if args.OutputPath == "" {
-		fmt.Println("Please provide output file path")
-		fmt.Println(HelpMsg)
-		return
-	}
+	// if args.OutputPath == "" {
+	// 	fmt.Println("Please provide output file path")
+	// 	fmt.Println(HelpMsg)
+	// 	return
+	// }
 
 	p, err := args.Evaluate()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	fmt.Printf("%#v\n", args)
 	p.Draw()
 }
 
