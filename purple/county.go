@@ -16,7 +16,7 @@ type County struct {
 	Points    []Point
 }
 
-type ChanCounty struct {
+type CountyPath struct {
 	Name string
 	Path *draw2d.Path
 }

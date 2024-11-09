@@ -42,16 +42,20 @@ func (p *Purple) draw(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
-	counties := p.projectCounties()
-
+	counties := p.outlineCounties()
 	for county := range counties {
-		countyColor := p.getCountyColor(county.Name)
-		gc.SetFillColor(countyColor)
-		gc.Fill(county.Path)
-		gc.Stroke(county.Path)
+		p.drawCounty(gc, county)
 	}
 }
 
+func (p *Purple) drawCounty(gc *draw2dsvg.GraphicContext, county *CountyPath) {
+	countyColor := p.getCountyColor(county.Name)
+	gc.SetFillColor(countyColor)
+	gc.Fill(county.Path)
+	gc.Stroke(county.Path)
+}
+
+// Extract a color for a given county from the statistics
 func (p *Purple) getCountyColor(county string) RGBA {
 	if v, ok := p.Stats[county]; ok {
 		return v
@@ -59,8 +63,10 @@ func (p *Purple) getCountyColor(county string) RGBA {
 	return RGBA{0, 0, 0, 0}
 }
 
-func (p *Purple) projectCounties() chan *ChanCounty {
-	counties := make(chan *ChanCounty, p.State.CountiesN)
+// Concurrently outline all counties and get their paths
+func (p *Purple) outlineCounties() chan *CountyPath {
+	counties := make(chan *CountyPath, p.State.CountiesN)
+	defer close(counties)
 
 	wg := new(sync.WaitGroup)
 	wg.Add(p.State.CountiesN)
@@ -71,11 +77,13 @@ func (p *Purple) projectCounties() chan *ChanCounty {
 
 	wg.Wait()
 
-	close(counties)
 	return counties
 }
 
-func (p *Purple) outlineCounty(wg *sync.WaitGroup, county County, counties chan *ChanCounty) {
+// Draws a county outline and sends it to the counties channel
+func (p *Purple) outlineCounty(wg *sync.WaitGroup, county County, counties chan *CountyPath) {
+	defer wg.Done()
+
 	path := new(draw2d.Path)
 	path.Components = make([]draw2d.PathCmp, county.PointsN+1)
 	path.Points = make([]float64, 2*county.PointsN+2)
@@ -94,10 +102,8 @@ func (p *Purple) outlineCounty(wg *sync.WaitGroup, county County, counties chan 
 	path.Points[2*county.PointsN] = path.Points[0]
 	path.Points[2*county.PointsN+1] = path.Points[1]
 
-	newCounty := ChanCounty{}
+	newCounty := CountyPath{}
 	newCounty.Name = county.Name
 	newCounty.Path = path
 	counties <- &newCounty
-
-	wg.Done()
 }
