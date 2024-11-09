@@ -87,8 +87,6 @@ func (args *Arguments) Evaluate() (*purple.Purple, error) {
 		}
 	}
 
-	p.OutputPath = args.OutputPath
-
 	if args.Scale != "" {
 		v, err := strconv.ParseFloat(args.Scale, 64)
 		if err != nil {

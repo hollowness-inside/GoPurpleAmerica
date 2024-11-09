@@ -15,8 +15,7 @@ type Purple struct {
 	State *State
 	Year  string
 
-	Stats      map[string]RGBA
-	OutputPath string
+	Stats map[string]RGBA
 
 	Scale       float64
 	StrokeWidth float64
@@ -28,7 +27,7 @@ type ChanCounty struct {
 	Path *draw2d.Path
 }
 
-func (p *Purple) Draw() {
+func (p *Purple) GenerateSVG() *draw2dsvg.Svg {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
 
@@ -41,7 +40,7 @@ func (p *Purple) Draw() {
 	gc.Scale(p.Scale, p.Scale)
 	p.drawState(gc)
 
-	draw2dsvg.SaveToSvgFile(p.OutputPath, svg)
+	return svg
 }
 
 func (p *Purple) drawState(gc *draw2dsvg.GraphicContext) {
@@ -76,6 +75,7 @@ func (p *Purple) projectCounties() chan *ChanCounty {
 	}
 
 	wg.Wait()
+
 	close(counties)
 
 	return counties

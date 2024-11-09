@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/llgcode/draw2d/draw2dsvg"
 )
 
 // TODO: County abbreviation or full name
@@ -86,7 +88,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p.Draw()
+	svg := p.GenerateSVG()
+	draw2dsvg.SaveToSvgFile(args.OutputPath, svg)
 }
 
 func createColorTable(output string) {
