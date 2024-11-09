@@ -25,9 +25,23 @@ type Arguments struct {
 	StrokeColor string
 }
 
+func DefaultArguments() *Arguments {
+	return &Arguments{
+		StateName:  "USA",
+		StatesPath: "data/regions.zip",
+		Year:       "2016",
+		StatsPath:  "",
+		ColorsPath: "",
+		OutputPath: "",
+
+		Scale:       "10",
+		StrokeWidth: "0.05",
+		StrokeColor: "0,0,0,255",
+	}
+}
+
 func (args *Arguments) Evaluate() (*purple.Purple, error) {
 	p := new(purple.Purple)
-	p.UseDefaults()
 
 	if args.StatesPath != "" {
 		state, err := zipRead(args.StatesPath, args.StateName, purple.ReadState)

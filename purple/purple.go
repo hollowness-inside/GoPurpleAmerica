@@ -28,12 +28,6 @@ type ChanCounty struct {
 	Path *draw2d.Path
 }
 
-func (p *Purple) UseDefaults() {
-	p.Scale = 10
-	p.StrokeWidth = 0.05
-	p.StrokeColor = RGBA{0, 0, 0, 255}
-}
-
 func (p *Purple) Draw() {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)

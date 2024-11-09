@@ -11,7 +11,7 @@ import (
 // TODO: Election results by several counties
 // TODO: Use different data sets
 
-const HelpMsg = `Usage: purple [options] -r regions.zip -o output.svg
+const HelpMsg = `Usage: purple [options] -o output.svg
 Options:
 	-r/--region REGION_NAME		Selects region to draw (USA by default)
 	-rd/--regions-data regions.zip	Selects archive containing region points data
@@ -26,7 +26,12 @@ Options:
 	-sc/--stroke-color R,G,B,A	Sets stroke color`
 
 func main() {
-	args := Arguments{}
+	args := DefaultArguments()
+
+	if len(os.Args) <= 1 {
+		fmt.Println(HelpMsg)
+		return
+	}
 
 	i := 1
 	for i < len(os.Args) {
@@ -66,24 +71,21 @@ func main() {
 		i++
 	}
 
-	// if args.StatesPath == "" {
-	// 	fmt.Println("Please provide regions data archive")
-	// 	fmt.Println(HelpMsg)
-	// 	return
-	// }
+	if args.StatesPath == "" {
+		fmt.Println("Please provide regions data archive")
+		return
+	}
 
-	// if args.OutputPath == "" {
-	// 	fmt.Println("Please provide output file path")
-	// 	fmt.Println(HelpMsg)
-	// 	return
-	// }
+	if args.OutputPath == "" {
+		fmt.Println("Please provide output file path")
+		return
+	}
 
 	p, err := args.Evaluate()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%#v\n", args)
 	p.Draw()
 }
 
