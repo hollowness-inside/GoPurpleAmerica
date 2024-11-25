@@ -70,11 +70,9 @@ func (p *Purple) outlineCounties() chan *CountyPath {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(p.State.CountiesN)
-
 	for _, county := range p.State.Counties {
 		go p.outlineCounty(wg, county, counties)
 	}
-
 	wg.Wait()
 
 	return counties
