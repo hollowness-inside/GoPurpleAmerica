@@ -12,19 +12,11 @@ type Region struct {
 }
 
 // Subregion represents a geographical subdivision within a parent region.
-// It contains the subregion's name, its parent region's name, and the points
-// that define its boundary.
+// It contains the subregion's name, its parent region's name, the points
+// that define its boundary, and the path representing its boundary.
 type Subregion struct {
-	Name       string  // Name of the subregion
-	ParentName string  // Name of the parent region this subregion belongs to
-	Points     []Point // Slice of points defining the subregion boundary
-}
-
-// TODO: Embed into Subregion
-
-// RegionPath represents a region's boundary as a drawable path.
-// It associates a region's name with its graphical representation.
-type RegionPath struct {
-	Name string       // Name of the region
-	Path *draw2d.Path // Draw2d path representing the region boundary
+	Name       string       // Name of the subregion
+	ParentName string       // Name of the parent region this subregion belongs to
+	Points     []Point      // Slice of points defining the subregion boundary
+	Path       *draw2d.Path // Draw2d path representing the subregion boundary
 }

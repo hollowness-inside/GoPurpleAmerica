@@ -71,6 +71,7 @@ func (sc *regionReader) scanRegion() *Region {
 			name,
 			regionName,
 			points,
+			nil,
 		}
 	}
 	return reg
