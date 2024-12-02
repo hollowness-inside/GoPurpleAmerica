@@ -44,12 +44,12 @@ func (args *Arguments) Evaluate() (*purple.Purple, error) {
 	p := new(purple.Purple)
 
 	if args.StatesPath != "" {
-		state, err := zipRead(args.StatesPath, args.StateName, purple.ReadState)
+		state, err := zipRead(args.StatesPath, args.StateName, purple.ReadRegion)
 		if err != nil {
 			return nil, err
 		}
 
-		p.State = state.(*purple.Region)
+		p.Region = state.(*purple.Region)
 	}
 
 	p.Year = args.Year

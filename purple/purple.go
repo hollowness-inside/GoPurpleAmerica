@@ -12,8 +12,8 @@ import (
 type RGBA = color.RGBA
 
 type Purple struct {
-	State *Region
-	Year  string
+	Region *Region
+	Year   string
 
 	Stats map[string]RGBA
 
@@ -26,8 +26,8 @@ func (p *Purple) GenerateSVG() *draw2dsvg.Svg {
 	svg := draw2dsvg.NewSvg()
 	gc := draw2dsvg.NewGraphicContext(svg)
 
-	width := p.State.Bbox.Max.X - p.State.Bbox.Min.X
-	height := p.State.Bbox.Max.Y - p.State.Bbox.Min.Y
+	width := p.Region.Bbox.Max.X - p.Region.Bbox.Min.X
+	height := p.Region.Bbox.Max.Y - p.Region.Bbox.Min.Y
 
 	svg.Width = fmt.Sprintf("%fpx", width*p.Scale)
 	svg.Height = fmt.Sprintf("%fpx", height*p.Scale)
@@ -42,55 +42,57 @@ func (p *Purple) draw(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
-	counties := p.outlineCounties()
-	for county := range counties {
-		p.drawCounty(gc, county)
+	subregions := p.outlineSubregions()
+	for subregion := range subregions {
+		p.drawSubregion(gc, subregion)
 	}
 }
 
-func (p *Purple) drawCounty(gc *draw2dsvg.GraphicContext, county *RegionPath) {
-	countyColor := p.getCountyColor(county.Name)
-	gc.SetFillColor(countyColor)
-	gc.Fill(county.Path)
-	gc.Stroke(county.Path)
+func (p *Purple) drawSubregion(gc *draw2dsvg.GraphicContext, subregion *RegionPath) {
+	subregionColor := p.getSubregionColor(subregion.Name)
+	gc.SetFillColor(subregionColor)
+	gc.Fill(subregion.Path)
+	gc.Stroke(subregion.Path)
 }
 
 // Extract a color for a given county from the statistics
-func (p *Purple) getCountyColor(county string) RGBA {
-	if v, ok := p.Stats[county]; ok {
+func (p *Purple) getSubregionColor(subregion string) RGBA {
+	if v, ok := p.Stats[subregion]; ok {
 		return v
 	}
 	return RGBA{0, 0, 0, 0}
 }
 
 // Concurrently outline all counties and get their paths
-func (p *Purple) outlineCounties() chan *RegionPath {
-	counties := make(chan *RegionPath, len(p.State.Subregions))
-	defer close(counties)
+func (p *Purple) outlineSubregions() chan *RegionPath {
+	subregionsN := len(p.Region.Subregions)
+	subregions := make(chan *RegionPath, subregionsN)
 
 	wg := new(sync.WaitGroup)
-	wg.Add(len(p.State.Subregions))
-	for _, county := range p.State.Subregions {
-		go p.outlineCounty(wg, county, counties)
+	wg.Add(subregionsN)
+	for _, subregion := range p.Region.Subregions {
+		go p.outlineSubregion(wg, subregion, subregions)
 	}
-	wg.Wait()
 
-	return counties
+	wg.Wait()
+	close(subregions)
+
+	return subregions
 }
 
 // Draws a county outline and sends it to the counties channel
-func (p *Purple) outlineCounty(wg *sync.WaitGroup, county Subregion, counties chan *RegionPath) {
+func (p *Purple) outlineSubregion(wg *sync.WaitGroup, subregion Subregion, subregions chan *RegionPath) {
 	defer wg.Done()
 
-	pointsN := len(county.Points)
+	pointsN := len(subregion.Points)
 
 	path := new(draw2d.Path)
 	path.Components = make([]draw2d.PathCmp, pointsN+1)
 	path.Points = make([]float64, 2*pointsN+2)
 
-	for i, point := range county.Points {
-		x := point.X - p.State.Bbox.Min.X
-		y := p.State.Bbox.Max.Y - point.Y
+	for i, point := range subregion.Points {
+		x := point.X - p.Region.Bbox.Min.X
+		y := p.Region.Bbox.Max.Y - point.Y
 
 		path.Components[i] = draw2d.LineToCmp
 		path.Points[i*2] = x
@@ -102,8 +104,8 @@ func (p *Purple) outlineCounty(wg *sync.WaitGroup, county Subregion, counties ch
 	path.Points[2*pointsN] = path.Points[0]
 	path.Points[2*pointsN+1] = path.Points[1]
 
-	newCounty := RegionPath{}
-	newCounty.Name = county.Name
-	newCounty.Path = path
-	counties <- &newCounty
+	newSubregion := RegionPath{}
+	newSubregion.Name = subregion.Name
+	newSubregion.Path = path
+	subregions <- &newSubregion
 }

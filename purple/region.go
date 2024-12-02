@@ -20,6 +20,8 @@ type Subregion struct {
 	Points     []Point // Slice of points defining the subregion boundary
 }
 
+// TODO: Embed into Subregion
+
 // RegionPath represents a region's boundary as a drawable path.
 // It associates a region's name with its graphical representation.
 type RegionPath struct {
