@@ -49,13 +49,13 @@ func (sc *regionReader) scanString() string {
 	return sc.Text()
 }
 
-func (sc *regionReader) scanRegion() *State {
-	reg := new(State)
+func (sc *regionReader) scanRegion() *Region {
+	reg := new(Region)
 	reg.Bbox = sc.scanBBox()
-	reg.CountiesN = sc.scanInt()
+	subregionsN := sc.scanInt()
 
-	reg.Counties = make([]County, reg.CountiesN)
-	for i := 0; i < reg.CountiesN; i++ {
+	reg.Subregions = make([]Subregion, subregionsN)
+	for i := 0; i < subregionsN; i++ {
 		sc.Scan()
 
 		name := sc.scanString()
@@ -67,10 +67,9 @@ func (sc *regionReader) scanRegion() *State {
 			points[j] = sc.scanPoint()
 		}
 
-		reg.Counties[i] = County{
+		reg.Subregions[i] = Subregion{
 			name,
 			regionName,
-			n,
 			points,
 		}
 	}

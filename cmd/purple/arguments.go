@@ -49,7 +49,7 @@ func (args *Arguments) Evaluate() (*purple.Purple, error) {
 			return nil, err
 		}
 
-		p.State = state.(*purple.State)
+		p.State = state.(*purple.Region)
 	}
 
 	p.Year = args.Year

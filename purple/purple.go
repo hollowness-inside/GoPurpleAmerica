@@ -12,7 +12,7 @@ import (
 type RGBA = color.RGBA
 
 type Purple struct {
-	State *State
+	State *Region
 	Year  string
 
 	Stats map[string]RGBA
@@ -48,7 +48,7 @@ func (p *Purple) draw(gc *draw2dsvg.GraphicContext) {
 	}
 }
 
-func (p *Purple) drawCounty(gc *draw2dsvg.GraphicContext, county *CountyPath) {
+func (p *Purple) drawCounty(gc *draw2dsvg.GraphicContext, county *RegionPath) {
 	countyColor := p.getCountyColor(county.Name)
 	gc.SetFillColor(countyColor)
 	gc.Fill(county.Path)
@@ -64,13 +64,13 @@ func (p *Purple) getCountyColor(county string) RGBA {
 }
 
 // Concurrently outline all counties and get their paths
-func (p *Purple) outlineCounties() chan *CountyPath {
-	counties := make(chan *CountyPath, p.State.CountiesN)
+func (p *Purple) outlineCounties() chan *RegionPath {
+	counties := make(chan *RegionPath, len(p.State.Subregions))
 	defer close(counties)
 
 	wg := new(sync.WaitGroup)
-	wg.Add(p.State.CountiesN)
-	for _, county := range p.State.Counties {
+	wg.Add(len(p.State.Subregions))
+	for _, county := range p.State.Subregions {
 		go p.outlineCounty(wg, county, counties)
 	}
 	wg.Wait()
@@ -79,12 +79,14 @@ func (p *Purple) outlineCounties() chan *CountyPath {
 }
 
 // Draws a county outline and sends it to the counties channel
-func (p *Purple) outlineCounty(wg *sync.WaitGroup, county County, counties chan *CountyPath) {
+func (p *Purple) outlineCounty(wg *sync.WaitGroup, county Subregion, counties chan *RegionPath) {
 	defer wg.Done()
 
+	pointsN := len(county.Points)
+
 	path := new(draw2d.Path)
-	path.Components = make([]draw2d.PathCmp, county.PointsN+1)
-	path.Points = make([]float64, 2*county.PointsN+2)
+	path.Components = make([]draw2d.PathCmp, pointsN+1)
+	path.Points = make([]float64, 2*pointsN+2)
 
 	for i, point := range county.Points {
 		x := point.X - p.State.Bbox.Min.X
@@ -96,11 +98,11 @@ func (p *Purple) outlineCounty(wg *sync.WaitGroup, county County, counties chan 
 	}
 
 	path.Components[0] = draw2d.MoveToCmp
-	path.Components[county.PointsN] = draw2d.LineToCmp
-	path.Points[2*county.PointsN] = path.Points[0]
-	path.Points[2*county.PointsN+1] = path.Points[1]
+	path.Components[pointsN] = draw2d.LineToCmp
+	path.Points[2*pointsN] = path.Points[0]
+	path.Points[2*pointsN+1] = path.Points[1]
 
-	newCounty := CountyPath{}
+	newCounty := RegionPath{}
 	newCounty.Name = county.Name
 	newCounty.Path = path
 	counties <- &newCounty
