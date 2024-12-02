@@ -13,12 +13,12 @@ import (
 )
 
 type Arguments struct {
-	StateName  string
-	StatesPath string
-	Year       string
-	StatsPath  string
-	ColorsPath string
-	OutputPath string
+	RegionName    string
+	RegionZipPath string
+	Year          string
+	StatsPath     string
+	ColorsPath    string
+	OutputPath    string
 
 	Scale       string
 	StrokeWidth string
@@ -27,12 +27,12 @@ type Arguments struct {
 
 func DefaultArguments() *Arguments {
 	return &Arguments{
-		StateName:  "USA",
-		StatesPath: "data/regions.zip",
-		Year:       "2016",
-		StatsPath:  "",
-		ColorsPath: "",
-		OutputPath: "",
+		RegionName:    "USA",
+		RegionZipPath: "data/regions.zip",
+		Year:          "2016",
+		StatsPath:     "",
+		ColorsPath:    "",
+		OutputPath:    "",
 
 		Scale:       "10",
 		StrokeWidth: "0.05",
@@ -43,19 +43,19 @@ func DefaultArguments() *Arguments {
 func (args *Arguments) Evaluate() (*purple.Purple, error) {
 	p := new(purple.Purple)
 
-	if args.StatesPath != "" {
-		state, err := zipRead(args.StatesPath, args.StateName, purple.ReadRegion)
+	if args.RegionZipPath != "" {
+		region, err := zipRead(args.RegionZipPath, args.RegionName, purple.ReadRegion)
 		if err != nil {
 			return nil, err
 		}
 
-		p.Region = state.(*purple.Region)
+		p.Region = region.(*purple.Region)
 	}
 
 	p.Year = args.Year
 
 	if args.StatsPath != "" {
-		stats, err := zipRead(args.StatsPath, args.StateName+args.Year, ReadStatistics)
+		stats, err := zipRead(args.StatsPath, args.RegionName+args.Year, ReadStatistics)
 		if err != nil {
 			return nil, err
 		}

@@ -42,9 +42,9 @@ func (p *Purple) draw(gc *draw2dsvg.GraphicContext) {
 	gc.SetStrokeColor(p.StrokeColor)
 	gc.SetLineWidth(p.StrokeWidth)
 
-	subregions := p.outlineSubregions()
-	for _, subregion := range subregions {
-		p.drawSubregion(gc, &subregion)
+	p.outlineSubregions()
+	for i := range p.Region.Subregions {
+		p.drawSubregion(gc, &p.Region.Subregions[i])
 	}
 }
 
@@ -55,7 +55,7 @@ func (p *Purple) drawSubregion(gc *draw2dsvg.GraphicContext, subregion *Subregio
 	gc.Stroke(subregion.Path)
 }
 
-// Extract a color for a given county from the statistics
+// Extract a color for a given subregion from the statistics
 func (p *Purple) getSubregionColor(subregion string) RGBA {
 	if v, ok := p.Stats[subregion]; ok {
 		return v
@@ -63,18 +63,17 @@ func (p *Purple) getSubregionColor(subregion string) RGBA {
 	return RGBA{0, 0, 0, 0}
 }
 
-// Concurrently outline all counties and get their paths
-func (p *Purple) outlineSubregions() []Subregion {
+// Concurrently outline all subregions and get their paths
+func (p *Purple) outlineSubregions() {
 	wg := new(sync.WaitGroup)
 	wg.Add(len(p.Region.Subregions))
 	for i := range p.Region.Subregions {
 		go p.outlineSubregion(wg, &p.Region.Subregions[i])
 	}
 	wg.Wait()
-	return p.Region.Subregions
 }
 
-// Draws a county outline and sends it to the counties channel
+// Draws a subregion outline
 func (p *Purple) outlineSubregion(wg *sync.WaitGroup, subregion *Subregion) {
 	defer wg.Done()
 
@@ -84,7 +83,9 @@ func (p *Purple) outlineSubregion(wg *sync.WaitGroup, subregion *Subregion) {
 	path.Components = make([]draw2d.PathCmp, pointsN+1)
 	path.Points = make([]float64, 2*pointsN+2)
 
-	for i, point := range subregion.Points {
+	for i := range subregion.Points {
+		point := subregion.Points[i]
+
 		x := point.X - p.Region.Bbox.Min.X
 		y := p.Region.Bbox.Max.Y - point.Y
 

@@ -8,9 +8,9 @@ import (
 	"github.com/llgcode/draw2d/draw2dsvg"
 )
 
-// TODO: County abbreviation or full name
-// TODO: Election results by county
-// TODO: Election results by several counties
+// TODO: Subregion abbreviation or full name
+// TODO: Election results by subregion
+// TODO: Election results by several subregions
 // TODO: Use different data sets
 
 const HelpMsg = `Usage: purple [options] -o output.svg
@@ -18,7 +18,7 @@ Options:
 	-r/--region REGION_NAME		Selects region to draw (USA by default)
 	-rd/--regions-data regions.zip	Selects archive containing region points data
 	-d/--data path.zip		Selects archive containing statisics data
-	-y/--year INT			Suffix of the state statistics file name
+	-y/--year INT			Suffix of the region statistics file name
 	-n/--colors filepath		Draws with colors presented in the file
 	-N output			Saves an example of a color file
 	-h/--help			Shows this message
@@ -40,10 +40,10 @@ func main() {
 		switch os.Args[i] {
 		case "-r", "--region":
 			i++
-			args.StateName = os.Args[i]
+			args.RegionName = os.Args[i]
 		case "-rd", "--regions-data":
 			i++
-			args.StatesPath = os.Args[i]
+			args.RegionZipPath = os.Args[i]
 		case "-o", "--output":
 			i++
 			args.OutputPath = os.Args[i]
@@ -73,7 +73,7 @@ func main() {
 		i++
 	}
 
-	if args.StatesPath == "" {
+	if args.RegionZipPath == "" {
 		fmt.Println("Please provide regions data archive")
 		return
 	}

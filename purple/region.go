@@ -3,8 +3,8 @@ package purple
 import "github.com/llgcode/draw2d"
 
 // Region represents a geographical area and its constituent subregions.
-// It can represent any hierarchical level like a country containing states,
-// a state containing counties, or any other administrative division.
+// It can represent any hierarchical level like a country containing regions,
+// a region containing subregions, or any other administrative division.
 type Region struct {
 	Bbox       BBox        // Bounding box containing the entire region
 	Name       string      // Name of the region
